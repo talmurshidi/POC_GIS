@@ -1,10 +1,79 @@
 <html lang="en">
-    <head>
+	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/style.css" />
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 		<title>Proof of concept GIS</title>
-    </head>
-    <body>
-      <p>Hello World</p>
-    </body>
+	</head>
+	<body>
+		<div id="map"></div>
+		<script>
+			//let map;
+
+			function initMap() {
+				const map = new google.maps.Map(document.getElementById("map"), {
+					zoom: 6,
+					center: { lat: 26.8206, lng: 30.8025 },
+				});
+				// Define the LatLng coordinates for the outer path.
+				const outerCoords = [
+					{ lat: -32.364, lng: 153.207 },
+					{ lat: -35.364, lng: 153.207 },
+					{ lat: -35.364, lng: 158.207 },
+					{ lat: -32.364, lng: 158.207 },
+				];
+
+				const egyptCoordinates = [
+					{ lat: 34.9226, lng: 29.50133 },
+					{ lat: 34.64174, lng: 29.09942 },
+					{ lat: 34.42655, lng: 28.34399 },
+					{ lat: 34.15451, lng: 27.8233 },
+					{ lat: 33.92136, lng: 27.6487 },
+					{ lat: 33.58811, lng: 27.97136 },
+					{ lat: 33.13676, lng: 28.41765 },
+					{ lat: 32.42323, lng: 29.85108 },
+					{ lat: 32.32046, lng: 29.76043 },
+					{ lat: 32.73482, lng: 28.70523 },
+					{ lat: 33.34876, lng: 27.69989 },
+					{ lat: 34.10455, lng: 26.14227 },
+					{ lat: 34.47387, lng: 25.59856 },
+					{ lat: 34.79507, lng: 25.03375 },
+					{ lat: 35.69241, lng: 23.92671 },
+					{ lat: 35.49372, lng: 23.75237 },
+					{ lat: 35.52598, lng: 23.10244 },
+					{ lat: 36.69069, lng: 22.20485 },
+					{ lat: 36.86623, lng: 22 },
+					{ lat: 32.9, lng: 22 },
+					{ lat: 29.02, lng: 22 },
+					{ lat: 25, lng: 22 },
+					{ lat: 25, lng: 25.6825 },
+					{ lat: 25, lng: 29.238655 },
+					{ lat: 24.70007, lng: 30.04419 },
+					{ lat: 24.95762, lng: 30.6616 },
+					{ lat: 24.80287, lng: 31.08929 },
+					{ lat: 25.16482, lng: 31.56915 },
+					{ lat: 26.49533, lng: 31.58568 },
+					{ lat: 27.45762, lng: 31.32126 },
+					{ lat: 28.45048, lng: 31.02577 },
+					{ lat: 28.91353, lng: 30.87005 },
+					{ lat: 29.68342, lng: 31.18686 },
+					{ lat: 30.09503, lng: 31.4734 },
+					{ lat: 30.97693, lng: 31.55586 },
+					{ lat: 31.68796, lng: 31.4296 },
+					{ lat: 31.96041, lng: 30.9336 },
+					{ lat: 32.19247, lng: 31.26034 },
+					{ lat: 32.99392, lng: 31.02407 },
+					{ lat: 33.7734, lng: 30.96746 },
+					{ lat: 34.26544, lng: 31.21936 },
+					{ lat: 34.9226, lng: 29.50133 },
+				];
+
+				map.data.add({
+					geometry: new google.maps.Data.Polygon([egyptCoordinates]),
+				});
+			}
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?sensor=false&callback=initMap"></script>
+	</body>
 </html>
