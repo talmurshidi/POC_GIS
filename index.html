@@ -13,15 +13,24 @@
 		<script>
 			//let map;
 			function initMap() {
-				const map = new google.maps.Map(document.getElementById("map"), {
-					zoom: 5,
-					center: { lat: 23.56347275, lng: 36.2476387 },
-				});
+				var mapCanvas = document.getElementById("map");
 
-				//var cPolygon = new google.maps.Polygon({
-				//	path: westBankCoordinates,
-				//	fillColor: "#fff",
-				//});
+				// Center
+				var center = new google.maps.LatLng(23.56347275, 36.2476387);
+
+				// Map Options
+				var mapOptions = {
+					zoom: 5,
+					center: center,
+					scrollwheel: true,
+					//mapTypeId: google.maps.MapTypeId.ROADMAP,
+					styles: [
+						{ stylers: [{ visibility: "simplified" }] },
+						{ elementType: "labels", stylers: [{ visibility: "off" }] },
+					],
+				};
+
+				const map = new google.maps.Map(mapCanvas, mapOptions);
 
 				//map.data.loadGeoJson("./json/geodata.geojson");
 				$.getJSON("./json/data.json", function (json) {
@@ -38,33 +47,20 @@
 					};
 				});
 
-				//	cPolygon.setMap(map);
-				//var localLayer = new google.maps.Data();
-				//localLayer.loadGeoJson(
-				//("https://www.dropbox.com/s/ipywb8tm073kxjg/gadm36_PSE_0.geojson?dl=0");
-				//);
-				//map.data.loadGeoJson(
-				//("https://www.dropbox.com/s/ipywb8tm073kxjg/gadm36_PSE_0.geojson");
-				//);
-				//localLayer.setMap(map);
-				//	map.data.add({
-				//	geometry: new google.maps.Data.Polygon([c]),
-				//});
-
-				/*var userCoor = [
-					["a", 0, 0],
-					["b", 30, 0],
-					["c", 10, 20],
+				var markers = [
+					["The Mosque of Ahmad Ibn Tulun", 30.028706, 31.249592],
+					["Abu Rizk Mosque", 30.553848, 31.518208],
 				];
 
 				var marker, i;
-S
-				for (i = 0; i < userCoor.length; i++) {
+
+				for (i = 0; i < markers.length; i++) {
 					marker = new google.maps.Marker({
-						position: new google.maps.LatLng(userCoor[i][1], userCoor[i][2]),
+						position: new google.maps.LatLng(markers[i][1], markers[i][2]),
+						icon: "icons/Map_icons_by_Scott_de_Jonge_mosque.svg",
 						map: map,
 					});
-				}*/
+				}
 			}
 		</script>
 		<script
