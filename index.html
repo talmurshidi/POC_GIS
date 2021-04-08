@@ -25,16 +25,13 @@
 
 				//map.data.loadGeoJson("./json/geodata.geojson");
 				$.getJSON("./json/data.json", function (json) {
-					console.log(json);
+					//console.log(json);
 					map.data.addGeoJson(json);
 				});
 
 				map.data.setStyle(function (feature) {
 					var name = feature.getProperty("name");
-					let color = "#fff";
-					if (name == "Palestine") color = "blue";
-					else if (name == "Egypt") color = "orange";
-					else if (name == "Iraq") color = "yellow";
+					let color = feature.getProperty("color");
 					return {
 						fillColor: color,
 						strokeWeight: 1,
@@ -53,6 +50,21 @@
 				//	map.data.add({
 				//	geometry: new google.maps.Data.Polygon([c]),
 				//});
+
+				/*var userCoor = [
+					["a", 0, 0],
+					["b", 30, 0],
+					["c", 10, 20],
+				];
+
+				var marker, i;
+S
+				for (i = 0; i < userCoor.length; i++) {
+					marker = new google.maps.Marker({
+						position: new google.maps.LatLng(userCoor[i][1], userCoor[i][2]),
+						map: map,
+					});
+				}*/
 			}
 		</script>
 		<script
