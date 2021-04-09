@@ -5,13 +5,40 @@
 		<link rel="stylesheet" href="css/style.css" />
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 		<script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+		<script src="https://www.gstatic.com/charts/loader.js"></script>
 		<title>Proof of concept GIS</title>
 	</head>
 	<body>
 		<div id="map"></div>
-		<div id="capture"></div>
+
 		<script>
-			//let map;
+			var map;
+			google.charts.load("current", {
+				packages: ["geochart"],
+				// Note: you will need to get a mapsApiKey for your project.
+				// See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+				mapsApiKey: "AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY",
+			});
+			function drawRegionsMap() {
+				var data = google.visualization.arrayToDataTable([
+					["Country", "Popularity"],
+					["Germany", 200],
+					["United States", 300],
+					["Brazil", 400],
+					["Canada", 500],
+					["France", 600],
+					["RU", 700],
+				]);
+
+				var options = {};
+
+				var chart = new google.visualization.GeoChart(
+					document.getElementById("map")
+				);
+
+				chart.draw(data, options);
+			}
+
 			function initMap() {
 				var mapCanvas = document.getElementById("map");
 
@@ -23,14 +50,14 @@
 					zoom: 5,
 					center: center,
 					scrollwheel: true,
-					//mapTypeId: google.maps.MapTypeId.ROADMAP,
+					mapTypeId: "terrain",
 					styles: [
 						{ stylers: [{ visibility: "simplified" }] },
 						{ elementType: "labels", stylers: [{ visibility: "off" }] },
 					],
 				};
 
-				const map = new google.maps.Map(mapCanvas, mapOptions);
+				map = new google.maps.Map(mapCanvas, mapOptions);
 
 				//map.data.loadGeoJson("./json/geodata.geojson");
 				$.getJSON("./json/data.json", function (json) {
@@ -52,6 +79,7 @@
 				map.data.addListener("click", function (event) {
 					let state = event.feature.getProperty("name");
 					let html = "Country: " + state; // combine state name with a label
+					//drawRegionsMap();
 					infowindow.setContent(html); // show the html variable in the infowindow
 					infowindow.setPosition(event.latLng); // anchor the infowindow at the marker
 					infowindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infowindow up slightly to the top of the marker icon
@@ -88,6 +116,10 @@
 					);
 				}
 			}
+			google.charts.load("current", {
+				callback: drawChart,
+				packages: ["bar", "corechart", "line", "table"],
+			});
 		</script>
 		<script
 			async
