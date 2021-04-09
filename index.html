@@ -47,6 +47,17 @@
 					};
 				});
 
+				var infowindow = new google.maps.InfoWindow();
+
+				map.data.addListener("click", function (event) {
+					let state = event.feature.getProperty("name");
+					let html = "Country: " + state; // combine state name with a label
+					infowindow.setContent(html); // show the html variable in the infowindow
+					infowindow.setPosition(event.latLng); // anchor the infowindow at the marker
+					infowindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infowindow up slightly to the top of the marker icon
+					infowindow.open(map);
+				});
+
 				var markers = [
 					["The Mosque of Ahmad Ibn Tulun", 30.028706, 31.249592],
 					["Abu Rizk Mosque", 30.553848, 31.518208],
@@ -60,6 +71,21 @@
 						icon: "icons/Map_icons_by_Scott_de_Jonge_mosque.svg",
 						map: map,
 					});
+
+					google.maps.event.addListener(
+						marker,
+						"click",
+						(function (marker, i) {
+							return function () {
+								infowindow.setContent(markers[i][0]);
+								infowindow.setPosition(event.latLng); // anchor the infowindow at the marker
+								infowindow.setOptions({
+									pixelOffset: new google.maps.Size(0, -10),
+								}); // move the infowindow up slightly to the top of the marker icon
+								infowindow.open(map, marker);
+							};
+						})(marker, i)
+					);
 				}
 			}
 		</script>
