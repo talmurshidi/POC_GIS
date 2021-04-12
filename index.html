@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -5,125 +6,16 @@
 		<link rel="stylesheet" href="css/style.css" />
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 		<script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script> -->
+		<!--Google Maps-->
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnY3rbBH--hIiQDkw25hFpFMKCn48MlSk"></script> -->
 		<script src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="js/initMap.js" type="text/javascript"></script>
+		<script src="js/drawChart.js" type="text/javascript"></script>
 		<title>Proof of concept GIS</title>
 	</head>
 	<body>
 		<div id="map"></div>
-
-		<script>
-			var map;
-			google.charts.load("current", {
-				packages: ["geochart"],
-				// Note: you will need to get a mapsApiKey for your project.
-				// See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-				mapsApiKey: "AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY",
-			});
-			function drawRegionsMap() {
-				var data = google.visualization.arrayToDataTable([
-					["Country", "Popularity"],
-					["Germany", 200],
-					["United States", 300],
-					["Brazil", 400],
-					["Canada", 500],
-					["France", 600],
-					["RU", 700],
-				]);
-
-				var options = {};
-
-				var chart = new google.visualization.GeoChart(
-					document.getElementById("map")
-				);
-
-				chart.draw(data, options);
-			}
-
-			function initMap() {
-				var mapCanvas = document.getElementById("map");
-
-				// Center
-				var center = new google.maps.LatLng(23.56347275, 36.2476387);
-
-				// Map Options
-				var mapOptions = {
-					zoom: 5,
-					center: center,
-					scrollwheel: true,
-					mapTypeId: "terrain",
-					styles: [
-						{ stylers: [{ visibility: "simplified" }] },
-						{ elementType: "labels", stylers: [{ visibility: "off" }] },
-					],
-				};
-
-				map = new google.maps.Map(mapCanvas, mapOptions);
-
-				//map.data.loadGeoJson("./json/geodata.geojson");
-				$.getJSON("./json/data.json", function (json) {
-					//console.log(json);
-					map.data.addGeoJson(json);
-				});
-
-				map.data.setStyle(function (feature) {
-					var name = feature.getProperty("name");
-					let color = feature.getProperty("color");
-					return {
-						fillColor: color,
-						strokeWeight: 1,
-					};
-				});
-
-				var infowindow = new google.maps.InfoWindow();
-
-				map.data.addListener("click", function (event) {
-					let state = event.feature.getProperty("name");
-					let html = "Country: " + state; // combine state name with a label
-					//drawRegionsMap();
-					infowindow.setContent(html); // show the html variable in the infowindow
-					infowindow.setPosition(event.latLng); // anchor the infowindow at the marker
-					infowindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infowindow up slightly to the top of the marker icon
-					infowindow.open(map);
-				});
-
-				var markers = [
-					["The Mosque of Ahmad Ibn Tulun", 30.028706, 31.249592],
-					["Abu Rizk Mosque", 30.553848, 31.518208],
-				];
-
-				var marker, i;
-
-				for (i = 0; i < markers.length; i++) {
-					marker = new google.maps.Marker({
-						position: new google.maps.LatLng(markers[i][1], markers[i][2]),
-						icon: "icons/Map_icons_by_Scott_de_Jonge_mosque.svg",
-						map: map,
-					});
-
-					google.maps.event.addListener(
-						marker,
-						"click",
-						(function (marker, i) {
-							return function () {
-								infowindow.setContent(markers[i][0]);
-								infowindow.setPosition(event.latLng); // anchor the infowindow at the marker
-								infowindow.setOptions({
-									pixelOffset: new google.maps.Size(0, -10),
-								}); // move the infowindow up slightly to the top of the marker icon
-								infowindow.open(map, marker);
-							};
-						})(marker, i)
-					);
-				}
-			}
-			google.charts.load("current", {
-				callback: drawChart,
-				packages: ["bar", "corechart", "line", "table"],
-			});
-		</script>
-		<script
-			async
-			src="https://maps.googleapis.com/maps/api/js?sensor=false&callback=initMap"
-		></script>
 	</body>
 </html>

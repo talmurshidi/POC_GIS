@@ -1,0 +1,91 @@
+$(document).ready(function () {
+	var map;
+	function initMap() {
+		var infoWindow = new google.maps.InfoWindow();
+		var mapCanvas = document.getElementById("map");
+
+		// Center
+		var center = new google.maps.LatLng(23.56347275, 36.2476387);
+
+		// Map Options
+		var mapOptions = {
+			zoom: 5,
+			center: center,
+			scrollwheel: true,
+			mapTypeId: "terrain",
+			styles: [
+				{ stylers: [{ visibility: "simplified" }] },
+				{ elementType: "labels", stylers: [{ visibility: "off" }] },
+			],
+		};
+
+		map = new google.maps.Map(mapCanvas, mapOptions);
+
+		//map.data.loadGeoJson("./json/geodata.geojson");
+		$.getJSON("./json/data.json", function (json) {
+			//console.log(json);
+			map.data.addGeoJson(json);
+		});
+
+		map.data.setStyle(function (feature) {
+			var name = feature.getProperty("name");
+			let color = feature.getProperty("color");
+			return {
+				fillColor: color,
+				strokeWeight: 1,
+			};
+		});
+
+		map.data.addListener("click", function (event) {
+			//let state = event.feature.getProperty("name");
+			//let html = "Country: " + state; // combine state name with a label
+			drawChart(event, map, infoWindow);
+			//console.log(infoWindow);
+			//infoWindow.setContent(html); // show the html variable in the infoWindow
+			//infoWindow.setPosition(event.latLng); // anchor the infowindow at the marker
+			//infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infoWindow up slightly to the top of the marker icon
+			//infoWindow.open(map);
+		});
+
+		var markers = [
+			["The Mosque of Ahmad Ibn Tulun", 30.028706, 31.249592],
+			["Abu Rizk Mosque", 30.553848, 31.518208],
+		];
+
+		var marker, i;
+
+		for (i = 0; i < markers.length; i++) {
+			marker = new google.maps.Marker({
+				position: new google.maps.LatLng(markers[i][1], markers[i][2]),
+				icon: "icons/Map_icons_by_Scott_de_Jonge_mosque.svg",
+				map: map,
+			});
+
+			google.maps.event.addListener(
+				marker,
+				"click",
+				(function (marker, i) {
+					return function () {
+						infoWindow.setContent(markers[i][0]);
+						infoWindow.setPosition(event.latLng); // anchor the infoWindow at the marker
+						infoWindow.setOptions({
+							pixelOffset: new google.maps.Size(0, -10),
+						}); // move the infoWindow up slightly to the top of the marker icon
+						infoWindow.open(map, marker);
+					};
+				})(marker, i)
+			);
+		}
+	}
+	google.charts.load("current", {
+		//callback: drawChart,
+		packages: ["bar", "corechart", "line", "table"],
+	});
+	/*google.charts.load("current", {
+				packages: ["geochart"],
+				// Note: you will need to get a mapsApiKey for your project.
+				// See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+				mapsApiKey: "AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY",
+			});*/
+	$(initMap);
+});
