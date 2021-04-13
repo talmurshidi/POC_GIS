@@ -32,7 +32,7 @@ function drawChart(event, map, infoWindow) {
 	};
 
 	var node = document.createElement("div"),
-		//infoWindow = new google.maps.InfoWindow(),
+		infoWindow = new google.maps.InfoWindow(),
 		chart = new google.charts.Bar(node);
 
 	chart.draw(data, google.charts.Bar.convertOptions(options));
