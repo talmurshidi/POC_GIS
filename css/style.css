@@ -1,9 +1,27 @@
+.map-container {
+  height: 100%;
+  position: relative;
+}
+
+.map-bg {
+  width: 100%;
+  height: 100%;
+  background-image: url('../1.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  position: absolute;
+}
+
 /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
 #map {
+  overflow: hidden;
+  left: 0;
+  top: 0;
   height: 100%;
   width: 100%;
-  position: absolute im !important;
+  position: relative !important;
 }
 
 /* Optional: Makes the sample page fill the window. */
