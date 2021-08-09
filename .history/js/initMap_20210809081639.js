@@ -11,24 +11,9 @@ $(document).ready(function () {
 		var mapOptions = {
 			zoom: 5,
 			center: center,
-			mapTypeControl: false,
-			mapTypeControlOptions: {
-				style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-				position: google.maps.ControlPosition.TOP_CENTER,
-			},
-			zoomControl: false,
-			zoomControlOptions: {
-				position: google.maps.ControlPosition.RIGHT_BOTTOM,
-			},
-			scaleControl: false,
-			streetViewControl: false,
-			streetViewControlOptions: {
-				position: google.maps.ControlPosition.LEFT_TOP,
-			},
-			fullscreenControl: true,
 			scrollwheel: false,
-			gestureHandling: "cooperative",
 			//mapTypeId: "terrain",
+			mapTypeControl: false,
 			styles: [
 				{
 					featureType: "all",
@@ -101,9 +86,7 @@ $(document).ready(function () {
 		// 		})(marker, i)
 		// 	);
 		// }
-		// drawLegend(map);
 	}
-
 	google.charts.load("current", {
 		//callback: drawChart,
 		packages: ["bar", "corechart", "line", "table"],

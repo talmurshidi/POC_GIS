@@ -26,8 +26,7 @@ $(document).ready(function () {
 				position: google.maps.ControlPosition.LEFT_TOP,
 			},
 			fullscreenControl: true,
-			scrollwheel: false,
-			gestureHandling: "cooperative",
+			scrollwheel: true,
 			//mapTypeId: "terrain",
 			styles: [
 				{

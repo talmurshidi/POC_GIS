@@ -27,7 +27,6 @@ $(document).ready(function () {
 			},
 			fullscreenControl: true,
 			scrollwheel: false,
-			gestureHandling: "cooperative",
 			//mapTypeId: "terrain",
 			styles: [
 				{

@@ -2,17 +2,18 @@ function drawChart(event, map, infoWindow) {
 	let country = event.feature.getProperty("name");
 	// Create the data table.
 	var data = google.visualization.arrayToDataTable([
-		["country", "Shafai", "Hanbali", "Hanafi"],
+		[" ", "Shafai", "Hanbali", "Hanafi"],
 		[country, 1000, 400, 200],
 	]);
 
 	// Set chart options
 	var options = {
-		//height: 700,
-		// width: 200,
+		height: 200,
+		width: 200,
 		fontSize: 16,
+		legend: { position: "none" },
 		chart: {
-			title: "Country: " + country,
+			//title: "Country: " + country,
 			//subtitle: "Sales, Expenses, and Profit: 2014-2017",
 		},
 		// Colors only the chart area, with opacity

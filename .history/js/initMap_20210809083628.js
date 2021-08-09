@@ -1,3 +1,39 @@
+function drawLegend(map) {
+	console.log("Called");
+	const legends = [
+		{
+			name: "Shafi",
+			color: "blue",
+		},
+		{
+			name: "Hanbali",
+			color: "red",
+		},
+		{
+			name: "Hanafi",
+			color: "yellow",
+		},
+	];
+
+	const legend = document.getElementById("legend");
+
+	for (const key in legends) {
+		const type = legends[key];
+		const name = type.name;
+		const color = type.color;
+		const div = document.createElement("div");
+		div.innerHTML = `
+		<div style="height:25px;">
+			<div class="legend-color-box" style="background-color: ${color}"></div>
+			<span style="line-height: 23px;">${name}</span>
+		</div>`;
+
+		legend.appendChild(div);
+	}
+
+	map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+}
+
 var map; // Global variable
 $(document).ready(function () {
 	function initMap() {
@@ -11,24 +47,9 @@ $(document).ready(function () {
 		var mapOptions = {
 			zoom: 5,
 			center: center,
-			mapTypeControl: false,
-			mapTypeControlOptions: {
-				style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-				position: google.maps.ControlPosition.TOP_CENTER,
-			},
-			zoomControl: false,
-			zoomControlOptions: {
-				position: google.maps.ControlPosition.RIGHT_BOTTOM,
-			},
-			scaleControl: false,
-			streetViewControl: false,
-			streetViewControlOptions: {
-				position: google.maps.ControlPosition.LEFT_TOP,
-			},
-			fullscreenControl: true,
 			scrollwheel: false,
-			gestureHandling: "cooperative",
 			//mapTypeId: "terrain",
+			mapTypeControl: false,
 			styles: [
 				{
 					featureType: "all",
@@ -101,7 +122,7 @@ $(document).ready(function () {
 		// 		})(marker, i)
 		// 	);
 		// }
-		// drawLegend(map);
+		drawLegend(map);
 	}
 
 	google.charts.load("current", {
@@ -116,38 +137,3 @@ $(document).ready(function () {
 			});*/
 	$(initMap);
 });
-
-function drawLegend(map) {
-	const legends = [
-		{
-			name: "Shafi",
-			color: "blue",
-		},
-		{
-			name: "Hanbali",
-			color: "red",
-		},
-		{
-			name: "Hanafi",
-			color: "yellow",
-		},
-	];
-
-	const legend = document.getElementById("legend");
-
-	for (const key in legends) {
-		const type = legends[key];
-		const name = type.name;
-		const color = type.color;
-		const div = document.createElement("div");
-		div.innerHTML = `
-		<div style="height:25px;">
-			<div class="legend-color-box" style="background-color: ${color}"></div>
-			<span style="line-height: 23px;">${name}</span>
-		</div>`;
-
-		legend.appendChild(div);
-	}
-
-	map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
-}

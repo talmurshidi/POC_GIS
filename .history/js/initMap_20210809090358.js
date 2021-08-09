@@ -16,7 +16,7 @@ $(document).ready(function () {
 				style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
 				position: google.maps.ControlPosition.TOP_CENTER,
 			},
-			zoomControl: false,
+			zoomControl: true,
 			zoomControlOptions: {
 				position: google.maps.ControlPosition.RIGHT_BOTTOM,
 			},
@@ -27,7 +27,6 @@ $(document).ready(function () {
 			},
 			fullscreenControl: true,
 			scrollwheel: false,
-			gestureHandling: "cooperative",
 			//mapTypeId: "terrain",
 			styles: [
 				{
