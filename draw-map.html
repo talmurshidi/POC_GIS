@@ -14,28 +14,133 @@
 		<title>Proof of concept GIS</title>
 	</head>
 	<body>
-		<div class="map-container">
-			<div class="map-bg"></div>
-			<div id="map" style="opacity: 0.5"></div>
-		</div>
-		<div style="padding: 20px">
-			<a href="index.html">View Map</a>
-			<a href="draw-map.html">Draw Map</a>
-		</div>
-		<div>
-			<h3>Image properties</h3>
-			<div>
-				<p style="float: left; vertical-align: middle">size</p>
-				<div>
-					<button>+</button>
-					<button>-</button>
+		<div style="clear: both; overflow: auto">
+			<div style="padding: 20px">
+				<a href="index.html">View Map</a>
+				<a href="draw-map.html">Draw Map</a>
+			</div>
+			<div style="float: left">
+				<h3>Image properties</h3>
+				<input
+					type="file"
+					id="select_image"
+					name="image"
+					onchange="putImage()"
+				/>
+				<div style="float: left">
+					<p>size</p>
+					<div>
+						<button onclick="imageScaleUp()">+</button>
+						<button onclick="imageScaleDown()">-</button>
+					</div>
+				</div>
+				<div style="float: left">
+					<p>Position</p>
+					<div>
+						<button onclick="imagePosition('up')">Up</button>
+						<button onclick="imagePosition('down')">Down</button>
+					</div>
+					<div>
+						<button onclick="imagePosition('left')">Left</button>
+						<button onclick="imagePosition('right')">Right</button>
+					</div>
 				</div>
 			</div>
+			<div style="float: left">
+				<h3>Map properties</h3>
+				<div style="float: left">
+					<p>Opacity</p>
+					<div>
+						<button onclick="increaseOpacity()">+</button>
+						<button onclick="decreaseOpacity()">-</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="map-container">
+			<img id="map-bg" src="1.jpg" />
+			<div id="map" style="opacity: 0.5"></div>
 		</div>
 	</body>
 	<script>
 		window.onload = function () {
 			initMap(true);
 		};
+
+		function showImage(src, target) {
+			var fr = new FileReader();
+
+			fr.onload = function () {
+				target.src = fr.result;
+			};
+			fr.readAsDataURL(src.files[0]);
+		}
+		function putImage() {
+			var src = document.getElementById("select_image");
+			var target = document.getElementById("map-bg");
+			showImage(src, target);
+		}
+
+		function imageScaleUp() {
+			var img = document.getElementById("map-bg");
+			img.height = img.height + 10;
+			img.width = img.width + 10;
+		}
+
+		function imageScaleDown() {
+			var img = document.getElementById("map-bg");
+			img.height = img.height - 10;
+			img.width = img.width - 10;
+		}
+
+		function increaseOpacity() {
+			var map = document.getElementById("map");
+			var mapOpacity = parseFloat(map.style.opacity);
+			if (mapOpacity != 1) map.style.opacity = mapOpacity + 0.1;
+		}
+
+		function decreaseOpacity() {
+			var map = document.getElementById("map");
+			var mapOpacity = parseFloat(map.style.opacity);
+			if (mapOpacity != 0) map.style.opacity = mapOpacity - 0.1;
+		}
+
+		function imagePosition(position) {
+			var mapBg = document.getElementById("map-bg");
+			var newPosition = 0;
+
+			if (position == "up") {
+				if (mapBg.style.top === "") mapBg.style.top = 0;
+				var mapBgTop = parseFloat(mapBg.style.top);
+				newPosition = mapBgTop - 10;
+				mapBg.style.top = newPosition + "px";
+			}
+
+			if (position == "down") {
+				if (mapBg.style.top === "") mapBg.style.top = 0;
+				var mapBgTop = parseFloat(mapBg.style.top);
+				newPosition = mapBgTop + 10;
+				mapBg.style.top = newPosition + "px";
+			}
+
+			if (position == "left") {
+				if (mapBg.style.left === "") mapBg.style.left = 0;
+				var mapBgLeft = parseFloat(mapBg.style.left);
+				newPosition = mapBgLeft - 10;
+				mapBg.style.left = newPosition + "px";
+			}
+
+			if (position == "right") {
+				if (mapBg.style.left === "") mapBg.style.left = 0;
+				var mapBgLeft = parseFloat(mapBg.style.left);
+				newPosition = mapBgLeft + 10;
+				mapBg.style.left = newPosition + "px";
+			}
+		}
+
+		function mapZoom(zoomOption) {
+			if (zoomOption == "in") map.setZoom(map.getZoom() + 1);
+			if (zoomOption == "out") map.setZoom(map.getZoom() - 1);
+		}
 	</script>
 </html>

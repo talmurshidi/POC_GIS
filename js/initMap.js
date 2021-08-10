@@ -17,9 +17,11 @@ function initMap(isEditable) {
 			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
 			position: google.maps.ControlPosition.TOP_CENTER,
 		},
+		panControl: true,
 		zoomControl: true,
 		zoomControlOptions: {
 			position: google.maps.ControlPosition.RIGHT_BOTTOM,
+			style: google.maps.ZoomControlStyle.SMALL,
 		},
 		scaleControl: false,
 		streetViewControl: false,
