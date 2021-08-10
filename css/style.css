@@ -5,7 +5,7 @@
   overflow: hidden;
 }
 
-#map-bg {
+.map-bg {
   position: absolute;
   justify-content: center;
   align-items: center;
