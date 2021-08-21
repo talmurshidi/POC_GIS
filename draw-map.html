@@ -20,6 +20,7 @@
 			<div style="padding: 20px">
 				<a href="index.html">View Map</a>
 				<a href="draw-map.html">Draw Map</a>
+				<a href="draw-map.html" target="_blank">New Draw Map</a>
 			</div>
 			<div style="float: left">
 				<h3>Image properties</h3>
@@ -31,6 +32,9 @@
 				/>
 				<div style="float: left">
 					<p>size</p>
+					<div>
+						<input value="8" id="image-size-value" style="width: 30px" />
+					</div>
 					<div>
 						<button onclick="imageScaleUp()">+</button>
 						<button onclick="imageScaleDown()">-</button>
@@ -60,15 +64,17 @@
 			</div>
 		</div>
 		<div class="map-container">
-			<img id="map-bg" class="map-bg" src="1.jpg" alt="" />
-			<div id="map" style="opacity: 0.5"></div>
+			<img id="map-bg" class="map-bg" alt="" />
+			<div id="map"></div>
 		</div>
 
 		<table style="width: 800px">
 			<tr>
 				<td>Output</td>
 				<td>
-					<button type="button" onclick="createGeoJSON()">Create</button>
+					<button id="create-json-btn" type="button" onclick="createGeoJSON()">
+						Create
+					</button>
 					<button type="button" onclick="exportGeoJson()">Export</button>
 				</td>
 			</tr>
@@ -101,14 +107,18 @@
 
 		function imageScaleUp() {
 			var img = document.getElementById("map-bg");
-			img.height = img.height + 10;
-			img.width = img.width + 10;
+			var sizeValue = document.getElementById("image-size-value").value;
+			var sizeInt = parseInt(sizeValue);
+			img.height = img.height + sizeInt;
+			img.width = img.width + sizeInt;
 		}
 
 		function imageScaleDown() {
 			var img = document.getElementById("map-bg");
-			img.height = img.height - 10;
-			img.width = img.width - 10;
+			var sizeValue = document.getElementById("image-size-value").value;
+			var sizeInt = parseInt(sizeValue);
+			img.height = img.height - sizeInt;
+			img.width = img.width - sizeInt;
 		}
 
 		function increaseOpacity() {

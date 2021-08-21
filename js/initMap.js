@@ -1,8 +1,10 @@
 let map; // Global variable
 let drawingManager;
-let isEditable = false;
+let infoWindow;
+var isEditable = false;
 var features = {
 	polygons: [],
+	multiPolygons: [],
 	polylines: [],
 	markers: [],
 };
@@ -10,6 +12,16 @@ let deleteMenu;
 const gj = {
 	type: "FeatureCollection",
 	features: [],
+};
+const constants = {
+	name: "name",
+	fill: "fill",
+	stroke: "stroke",
+	zIndex: "z-index",
+	fillOpacity: "fill-opacity",
+	strokeWidth: "stroke-width",
+	icon: "icon",
+	label: "label",
 };
 // set default drawing styles
 const styles = {
@@ -19,20 +31,21 @@ const styles = {
 		strokeColor: "#000000",
 		strokeWeight: 2,
 		clickable: true,
-		editable: true,
+		editable: false,
 		zIndex: 1,
 	},
 	polyline: {
 		strokeColor: "#555555",
-		strokeWeight: 3,
+		strokeWeight: 2,
+		strokeOpacity: 1,
 		clickable: true,
-		editable: true,
+		editable: false,
 		zIndex: 2,
 	},
 	marker: {
 		icon: "https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red.png",
 		clickable: true,
-		draggable: true,
+		draggable: false,
 		zIndex: 3,
 		// icon: {
 		// 	path: google.maps.SymbolPath.CIRCLE,
@@ -48,31 +61,36 @@ const styles = {
 		// },
 	},
 };
-
 const featureTypes = {
 	polygon: "polygon",
+	multiPolygon: "multipolygon",
 	marker: "marker",
 	point: "point", // Used in GeoJson type
 	polyline: "polyline",
+	lineString: "linestring", // Used in GeoJson type
 };
 
-function initMap(isEditable) {
-	this.isEditable = isEditable;
-
+function initMap(isEditableShape) {
+	isEditable = isEditableShape;
 	var mapCanvas = document.getElementById("map");
+
+	//InfoWindow
+	infoWindow = new google.maps.InfoWindow();
 
 	// Center
 	var center = new google.maps.LatLng(23.56347275, 36.2476387);
 
 	// Map Options
 	var mapOptions = {
-		zoom: 5,
+		zoom: 4,
 		center: center,
-		mapTypeControl: false,
+		mapTypeControl: true,
 		mapTypeControlOptions: {
-			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-			position: google.maps.ControlPosition.TOP_CENTER,
+			style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+			// style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+			position: google.maps.ControlPosition.RIGHT_TOP,
 		},
+		// rotateControl: true,
 		panControl: true,
 		zoomControl: true,
 		zoomControlOptions: {
@@ -84,27 +102,119 @@ function initMap(isEditable) {
 		streetViewControlOptions: {
 			position: google.maps.ControlPosition.LEFT_TOP,
 		},
-		fullscreenControl: true,
+		fullScreenControl: true,
+		fullScreenControlOptions: {},
 		scrollwheel: true,
-		//mapTypeId: "terrain",
-		styles: [
-			{
-				featureType: "all",
-				elementType: "labels",
-				stylers: [
-					{
-						visibility: isEditable == true ? "on" : "off",
-					},
-				],
-			},
-			// { stylers: [{ visibility: "simplified" }] },
-			// { elementType: "labels", stylers: [{ visibility: "off" }] },
-		],
+		// options: {
+		// 	gestureHandling: "greedy",
+		// },
+		// mapTypeId: "hybrid",
+		// styles: [
+		// 	{
+		// 		featureType: "all",
+		// 		elementType: "labels.icon.text",
+		// 		stylers: [
+		// 			{
+		// 				visibility: isEditable == true ? "on" : "off",
+		// 			},
+		// 		],
+		// 	},
+		// 	// { stylers: [{ visibility: "simplified" }] },
+		// 	// { elementType: "labels", stylers: [{ visibility: "off" }] },
+		// ],
 	};
+
+	if (isEditableShape == true) {
+		mapOptions["mapTypeId"] = "hybrid";
+	} else {
+		// var mapStyles = [
+		// 	{
+		// 		featureType: "all",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "administrative",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "landscape",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "poi",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "road",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "transit",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// 	{
+		// 		featureType: "water",
+		// 		elementType: "labels",
+		// 		stylers: [{ visibility: "off" }],
+		// 	},
+		// ];
+		// mapOptions["styles"] = mapStyles;
+		mapOptions["mapTypeControl"] = false;
+		// mapOptions["zoomControl"] = true;
+	}
+
+	var mapStyles = [
+		// {
+		// 	featureType: "all",
+		// 	elementType: "labels",
+		// 	stylers: [{ visibility: "off" }],
+		// },
+		{
+			featureType: "administrative",
+			elementType: "labels",
+			stylers: [{ visibility: "off" }],
+		},
+		{
+			featureType: "landscape",
+			elementType: "labels",
+			stylers: [{ visibility: "off" }],
+		},
+		{
+			featureType: "poi",
+			elementType: "labels",
+			stylers: [{ visibility: "off" }],
+		},
+		{
+			featureType: "road",
+			elementType: "labels",
+			stylers: [{ visibility: "off" }],
+		},
+		{
+			featureType: "transit",
+			elementType: "labels",
+			stylers: [{ visibility: "off" }],
+		},
+		// {
+		// 	featureType: "water",
+		// 	elementType: "labels",
+		// 	stylers: [{ visibility: "off" }],
+		// },
+	];
+	mapOptions["styles"] = mapStyles;
 
 	map = new google.maps.Map(mapCanvas, mapOptions);
 
-	if (isEditable) {
+	if (isEditableShape) {
+		// Change Polyline stroke color
+		styles.polyline.strokeColor = "red";
+		styles.polygon.strokeWeight = 2;
+
 		//initialize a common Drawing Manager object
 		//we will use only one Drawing Manager
 		drawingManager = new google.maps.drawing.DrawingManager({
@@ -133,47 +243,8 @@ function initMap(isEditable) {
 		drawingManager.setMap(map);
 		deleteMenu = new DeleteMenu();
 
-		google.maps.event.addListener(
-			drawingManager,
-			"overlaycomplete",
-			function (event) {
-				overlayClickListener(event.overlay);
-
-				var newShape = event.overlay;
-				newShape.type = event.type;
-
-				// Disable drawingManager
-				drawingManager.setDrawingMode(null);
-
-				if (newShape.type.toLowerCase() == featureTypes.polygon) {
-					var paths = event.overlay.getPaths();
-
-					// Remove overlay from map
-					event.overlay.setMap(null);
-
-					// Create Polygon
-					addFeature(featureTypes.polygon, paths);
-				} else if (newShape.type.toLowerCase() == featureTypes.polyline) {
-					var polylinePath = event.overlay.getPath();
-
-					// Remove overlay from map
-					event.overlay.setMap(null);
-
-					// Create Polyline
-					addFeature(featureTypes.polyline, polylinePath);
-				} else if (newShape.type.toLowerCase() == featureTypes.marker) {
-					var marker = event.overlay;
-					var markerPosition = marker.getPosition();
-
-					// Remove overlay from map
-					event.overlay.setMap(null);
-
-					// Create Marker
-					addFeature(featureTypes.marker, markerPosition);
-				}
-				// createGeoJSON(gj);
-			}
-		);
+		// Add drawing manager listener to handle completed overlay
+		drawingManagerListener();
 	}
 
 	google.charts.load("current", {
@@ -182,24 +253,132 @@ function initMap(isEditable) {
 	});
 }
 
-function addFeature(type, path) {
+function drawingManagerListener() {
+	//overlaycomplete listener
+	google.maps.event.addListener(
+		drawingManager,
+		"overlaycomplete",
+		function (event) {
+			// overlayClickListener(event.overlay);
+
+			var newShape = event.overlay;
+			newShape.type = event.type;
+
+			// Disable drawingManager
+			drawingManager.setDrawingMode(null);
+
+			if (newShape.type.toLowerCase() == featureTypes.polygon) {
+				var paths = event.overlay.getPaths();
+
+				// Remove overlay from map
+				event.overlay.setMap(null);
+
+				// Create Polygon
+				addFeature(featureTypes.polygon, paths, null, true);
+			} else if (newShape.type.toLowerCase() == featureTypes.multiPolygon) {
+				var paths = event.overlay.getPaths();
+
+				// Remove overlay from map
+				event.overlay.setMap(null);
+
+				// Create Polygon
+				addFeature(featureTypes.multiPolygon, paths, null, true);
+			} else if (newShape.type.toLowerCase() == featureTypes.polyline) {
+				var polylinePath = event.overlay.getPath();
+
+				// Remove overlay from map
+				event.overlay.setMap(null);
+
+				// Create Polyline
+				addFeature(featureTypes.polyline, polylinePath, null, true);
+			} else if (newShape.type.toLowerCase() == featureTypes.marker) {
+				var marker = event.overlay;
+				var markerPosition = marker.getPosition();
+
+				// Remove overlay from map
+				event.overlay.setMap(null);
+
+				// Create Marker
+				addFeature(featureTypes.marker, markerPosition, null, true);
+			}
+			// createGeoJSON(gj);
+		}
+	);
+}
+
+function addFeature(type, path, properties, isEditable) {
+	if (properties == null || typeof properties == undefined) properties = {};
+	var style = {};
 	switch (type) {
+		case featureTypes.multiPolygon:
 		case featureTypes.polygon:
-			var polygon = new google.maps.Polygon(styles.polygon);
+			if (Object.keys(properties).length) {
+				var fillColor = getProperty(properties, constants.fill);
+				var fillOpacity = getProperty(properties, constants.fillOpacity);
+				var strokeColor = getProperty(properties, constants.stroke);
+				var strokeWeight = getProperty(properties, constants.strokeWidth);
+				var zIndex = getProperty(properties, constants.zIndex);
+				style = {
+					fillColor:
+						typeof fillColor !== "undefined"
+							? fillColor
+							: styles.polygon.fillColor,
+					fillOpacity:
+						typeof fillOpacity !== "undefined"
+							? fillOpacity
+							: styles.polygon.fillOpacity,
+					strokeColor:
+						typeof strokeColor !== "undefined"
+							? strokeColor
+							: styles.polygon.strokeColor,
+					strokeWeight:
+						typeof strokeWeight !== "undefined"
+							? strokeWeight
+							: styles.polygon.strokeWeight,
+					zIndex:
+						typeof zIndex !== "undefined" ? zIndex : styles.polygon.zIndex,
+					clickable: true,
+					editable: false,
+				};
+			} else {
+				style = styles.polygon;
+			}
 
-			polygon.setPaths(path);
+			var polygon = new google.maps.Polygon(style);
 
-			polygon.addListener("remove_at", function () {
-				// alert("remove_at triggered");
-			});
+			var paths = [];
 
-			polygon.addListener("set_at", function () {
-				// console.log("set_at");
-			});
+			if (type == featureTypes.polygon) {
+				path.forEach(function (elements, index) {
+					paths.push(elements.getArray());
+				});
+			} else {
+				path.forEach(function (elements, index) {
+					elements.getArray().forEach(function (points, index) {
+						paths.push(points.getArray());
+					});
+				});
+			}
 
-			polygon.addListener("insert_at", function () {
-				// console.log("insert_at");
-			});
+			polygon.setPaths(paths);
+
+			if (isEditable) {
+				polygon.addListener("click", function (event) {
+					var isEditable = this.getEditable();
+					this.setEditable(!isEditable);
+				});
+			}
+			// polygon.addListener("remove_at", function () {
+			// 	// alert("remove_at triggered");
+			// });
+
+			// polygon.addListener("set_at", function () {
+			// 	// console.log("set_at");
+			// });
+
+			// polygon.addListener("insert_at", function () {
+			// 	// console.log("insert_at");
+			// });
 
 			google.maps.event.addListener(polygon, "contextmenu", (e) => {
 				// Check if click was on a vertex control point
@@ -209,28 +388,63 @@ function addFeature(type, path) {
 				deleteMenu.open(map, polygon.getPath(), e.vertex, featureTypes.polygon);
 			});
 
-			features.polygons.push(polygon);
+			var polygonShape = {
+				shape: polygon,
+				properties: properties,
+			};
+
+			features.polygons.push(polygonShape);
 
 			polygon.setMap(map);
 
 			break;
 
+		case featureTypes.lineString:
 		case featureTypes.polyline:
-			var polyline = new google.maps.Polyline(styles.polyline);
+			if (Object.keys(properties).length) {
+				var strokeColor = getProperty(properties, constants.stroke);
+				var strokeWeight = getProperty(properties, constants.strokeWidth);
+				var zIndex = getProperty(properties, constants.zIndex);
+				style = {
+					strokeColor:
+						typeof strokeColor !== "undefined"
+							? strokeColor
+							: styles.polyline.strokeColor,
+					strokeWeight:
+						typeof strokeWeight !== "undefined"
+							? strokeWeight
+							: styles.polyline.strokeWeight,
+					zIndex:
+						typeof zIndex !== "undefined" ? zIndex : styles.polyline.zIndex,
+					clickable: true,
+					editable: false,
+				};
+			} else {
+				style = styles.polyline;
+			}
+
+			var polyline = new google.maps.Polyline(style);
 
 			polyline.setPath(path);
 
-			polyline.addListener("remove_at", function () {
-				// alert("remove_at triggered");
-			});
+			if (isEditable) {
+				polyline.addListener("click", function (event) {
+					var isEditable = this.getEditable();
+					this.setEditable(!isEditable);
+				});
+			}
 
-			polyline.addListener("set_at", function () {
-				// console.log("set_at");
-			});
+			// polyline.addListener("remove_at", function () {
+			// 	// alert("remove_at triggered");
+			// });
 
-			polyline.addListener("insert_at", function () {
-				// console.log("insert_at");
-			});
+			// polyline.addListener("set_at", function () {
+			// 	// console.log("set_at");
+			// });
+
+			// polyline.addListener("insert_at", function () {
+			// 	// console.log("insert_at");
+			// });
 
 			google.maps.event.addListener(polyline, "contextmenu", (e) => {
 				// Check if click was on a vertex control point
@@ -245,23 +459,56 @@ function addFeature(type, path) {
 				);
 			});
 
-			features.polylines.push(polyline);
+			var polylineShape = {
+				shape: polyline,
+				properties: properties,
+			};
+
+			features.polylines.push(polylineShape);
 
 			polyline.setMap(map);
 
 			break;
 
+		case featureTypes.point:
 		case featureTypes.marker:
+			if (Object.keys(properties).length) {
+				var icon = getProperty(properties, constants.icon);
+				var label = getProperty(properties, constants.label);
+				var zIndex = getProperty(properties, constants.zIndex);
+				style = {
+					icon: icon,
+					label: label,
+					zIndex: typeof zIndex !== "undefined" ? zIndex : styles.marker.zIndex,
+					clickable: true,
+					draggable: false,
+				};
+			} else {
+				style = styles.marker;
+			}
+
 			var marker = new google.maps.Marker(styles.marker);
 
 			marker.setPosition(path);
 
+			if (isEditable) {
+				marker.addListener("click", function (event) {
+					var isDraggable = this.getDraggable();
+					this.setDraggable(!isDraggable);
+				});
+			}
+
 			marker.addListener("rightclick", function (e) {
 				marker.setMap(null);
-				features.markers = features.markers.filter(isValid);
+				features.markers = features.markers.shape.filter(isValid);
 			});
 
-			features.markers.push(marker);
+			var markerShape = {
+				shape: marker,
+				properties: properties,
+			};
+
+			features.markers.push(markerShape);
 
 			marker.setMap(map);
 
@@ -269,96 +516,50 @@ function addFeature(type, path) {
 	}
 }
 
-function isValid(f) {
-	return f.getMap() != null;
-}
-
 function overlayClickListener(overlay) {
 	google.maps.event.addListener(overlay, "mouseup", function (event) {});
 }
 
+function addPropertyToJSON(type, properties) {
+	if (!properties.hasOwnProperty(constants.name)) {
+		properties[constants.name] = "";
+	}
+
+	if (type == featureTypes.polygon || type == featureTypes.multiPolygon) {
+		if (!properties.hasOwnProperty(constants.stroke)) {
+			properties[constants.stroke] = styles.polygon.strokeColor;
+		}
+		if (!properties.hasOwnProperty(constants.fill)) {
+			properties[constants.fill] = styles.polygon.fillColor;
+		}
+	} else if (type == featureTypes.polyline || type == featureTypes.lineString) {
+		if (!properties.hasOwnProperty(constants.stroke)) {
+			properties[constants.stroke] = styles.polyline.strokeColor;
+		}
+	}
+}
+
+function getProperty(properties, propertyName) {
+	return properties[propertyName];
+}
+
+function isValid(f) {
+	return f.getMap() != null;
+}
+
 function createGeoJSONOutput(dataGeoJSON) {
 	document.getElementById("output").value = formatJson(dataGeoJSON);
+	document.getElementById("create-json-btn").disabled = false;
+}
+
+function clearGeoJSONOutput() {
+	document.getElementById("create-json-btn").disabled = true;
+	document.getElementById("output").value = "";
 }
 
 function formatJson(dataGeoJSON) {
-	var json = JSON.stringify(dataGeoJSON, null, 4);
+	var json = JSON.stringify(dataGeoJSON, null, 2);
 	return json;
-}
-
-function createGeoJSON() {
-	// gj.features = [];
-
-	var data = new google.maps.Data();
-
-	// map.data.forEach((feature) => {
-	// 	const geometry = feature.getGeometry();
-	// 	const type = geometry.getType();
-	// 	console.log(type);
-	// 	if (geometry) {
-	// 		// processPoints(geometry, bounds.extend, bounds);
-	// 	}
-	// });
-
-	if (features.polygons.length) {
-		features.polygons.forEach(function (polygon, indexPolygon) {
-			var paths = polygon.getPaths();
-			paths.forEach(function (path, indexPath) {
-				if (path !== undefined) {
-					data.add({
-						properties: {
-							name: "",
-						},
-						geometry: new google.maps.Data.Polygon([path.getArray()]),
-					});
-				}
-
-				// var bounds = [];
-				// path.forEach(function (coords, indexCoords) {
-				// 	var point = [coords.lng(), coords.lat()];
-				// 	bounds.push(point);
-				// });
-
-				// if (bounds.length) bounds.push(bounds[0]);
-
-				// gj.features.push({
-				// 	type: "Feature",
-				// 	properties: {
-				// 		name: "",
-				// 	},
-				// 	geometry: { type: "Polygon", coordinates: [bounds] },
-				// });
-			});
-		});
-
-		if (features.polylines.length) {
-			features.polylines.forEach(function (polyline, index) {
-				data.add({
-					properties: {
-						name: "",
-					},
-					geometry: new google.maps.Data.LineString(
-						polyline.getPath().getArray()
-					),
-				});
-			});
-		}
-
-		if (features.markers.length) {
-			features.markers.forEach(function (marker, index) {
-				data.add({
-					properties: {
-						name: "",
-					},
-					geometry: new google.maps.Data.Point(marker.getPosition()),
-				});
-			});
-		}
-
-		data.toGeoJson(function (json) {
-			createGeoJSONOutput(json);
-		});
-	}
 }
 
 function exportGeoJson() {
@@ -367,7 +568,7 @@ function exportGeoJson() {
 		let jsonValue = JSON.parse(value);
 		let fileName = "export.geojson";
 
-		let fileToSave = new Blob([formatJson(jsonValue)], {
+		let fileToSave = new Blob([JSON.stringify(jsonValue)], {
 			type: "application/json",
 			name: fileName,
 		});
@@ -411,41 +612,39 @@ function drawLegend(map) {
 	map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 }
 
-function loadJson(map) {
-	var infoWindow = new google.maps.InfoWindow();
+function loadGeoJsonStringDisplaying(geoJson) {
 	map.data.addListener("addfeature", featureAdded);
 	//map.data.loadGeoJson("./json/geodata.geojson");
-	$.getJSON("./json/black sea.geojson", function (json) {
-		//console.log(json);
+
+	$.getJSON("./json/sample.geojson", function (json) {
+		// var geojson = JSON.parse(JSON.stringify(json));
+
 		map.data.addGeoJson(json);
 	});
 
 	featureStyle(false);
 
-	map.data.addListener("click", function (event) {
-		//let state = event.feature.getProperty("name");
-		//let html = "Country: " + state; // combine state name with a label
-		drawChart(event, map, infoWindow);
-		//console.log(infoWindow);
-		//infoWindow.setContent(html); // show the html variable in the infoWindow
-		//infoWindow.setPosition(event.latLng); // anchor the infowindow at the marker
-		//infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infoWindow up slightly to the top of the marker icon
-		//infoWindow.open(map);
-	});
+	// map.data.addListener("click", function (event) {
+	// 	//let state = event.feature.getProperty("name");
+	// 	//let html = "Country: " + state; // combine state name with a label
+	// 	drawChart(event, map, infoWindow);
+	// 	//console.log(infoWindow);
+	// 	//infoWindow.setContent(html); // show the html variable in the infoWindow
+	// 	//infoWindow.setPosition(event.latLng); // anchor the infowindow at the marker
+	// 	//infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) }); // move the infoWindow up slightly to the top of the marker icon
+	// 	//infoWindow.open(map);
+	// });
 }
 
-function loadGeoJsonString(geoString) {
+function loadGeoJsonStringEditing(geoString) {
 	try {
 		map.data.addListener("addfeature", featureAdded);
 
 		const geojson = JSON.parse(geoString);
 		map.data.addGeoJson(geojson);
 		featureStyle(true);
-		// map.data.setStyle({
-		// 	editable: true,
-		// draggable: true,
-		// });
 	} catch (e) {
+		console.log(e);
 		alert("Not a GeoJSON file!");
 	}
 	// zoom(map);
@@ -453,74 +652,191 @@ function loadGeoJsonString(geoString) {
 
 function featureAdded(e) {
 	var featureType = e.feature.getGeometry().getType().toLowerCase();
+	var properties = {};
+	e.feature.forEachProperty(function (value, property) {
+		// console.log(property, ":", value);
+		properties[property] = value;
+	});
 	switch (featureType) {
 		case featureTypes.polygon:
 			addFeature(
 				featureTypes.polygon,
-				e.feature.getGeometry().getAt(0).getArray()
+				e.feature.getGeometry().getArray(),
+				properties,
+				isEditable
+			);
+			break;
+		case featureTypes.multiPolygon:
+			addFeature(
+				featureTypes.multiPolygon,
+				e.feature.getGeometry().getArray(),
+				properties,
+				isEditable
 			);
 			break;
 		case featureTypes.polyline:
-			addFeature(featureTypes.polyline, e.feature.getGeometry().getArray());
+		case featureTypes.lineString:
+			addFeature(
+				featureTypes.polyline,
+				e.feature.getGeometry().getArray(),
+				properties,
+				isEditable
+			);
 			break;
 		case featureTypes.point:
-			addFeature(featureTypes.point, e.feature.getGeometry().get());
+		case featureTypes.marker:
+			addFeature(
+				featureTypes.point,
+				e.feature.getGeometry().get(),
+				properties,
+				isEditable
+			);
 	}
 	map.data.remove(e.feature);
+}
+
+function createGeoJSON() {
+	// gj.features = [];
+
+	// Clear GeoJSON output teat
+	clearGeoJSONOutput();
+
+	var data = new google.maps.Data();
+
+	// map.data.forEach((feature) => {
+	// 	const geometry = feature.getGeometry();
+	// 	const type = geometry.getType();
+	// 	console.log(type);
+	// 	if (geometry) {
+	// 		// processPoints(geometry, bounds.extend, bounds);
+	// 	}
+	// });
+
+	if (features.polygons.length) {
+		features.polygons.forEach(function (polygon, indexPolygon) {
+			if (polygon.shape) {
+				var paths = polygon.shape.getPaths();
+				var properties = polygon.properties;
+				addPropertyToJSON(featureTypes.polygon, properties);
+				paths.forEach(function (path, indexPath) {
+					if (typeof path !== "undefined") {
+						data.add({
+							properties: properties,
+							geometry: new google.maps.Data.Polygon([path.getArray()]),
+						});
+					}
+				});
+			}
+		});
+	}
+
+	if (features.polylines.length) {
+		features.polylines.forEach(function (polyline, index) {
+			if (polyline.shape) {
+				var polylineShape = polyline.shape;
+				var properties = polyline.properties;
+				addPropertyToJSON(featureTypes.polyline, properties);
+				data.add({
+					properties: properties,
+					geometry: new google.maps.Data.LineString(
+						polylineShape.getPath().getArray()
+					),
+				});
+			}
+		});
+	}
+
+	if (features.markers.length) {
+		features.markers.forEach(function (marker, index) {
+			if (marker.shape) {
+				var markerShape = marker.shape;
+				var properties = marker.properties;
+				addPropertyToJSON(featureTypes.marker, properties);
+				data.add({
+					properties: properties,
+					geometry: new google.maps.Data.Point(markerShape.getPosition()),
+				});
+			}
+		});
+	}
+
+	data.toGeoJson(function (json) {
+		createGeoJSONOutput(json);
+	});
+}
+
+function output(obj) {
+	console.log(formatJson(obj));
 }
 
 function featureStyle(isEditable) {
 	map.data.setStyle(function (feature) {
 		let featureType = feature.getGeometry().getType().toLowerCase();
 
-		if (featureType == featureTypes.polygon) {
-			var fillColor = feature.getProperty("fillColor");
-			var fillOpacity = feature.getProperty("fillOpacity");
-			var strokeColor = feature.getProperty("strokeColor");
-			var strokeWeight = feature.getProperty("strokeWeight");
-			var zIndex = feature.getProperty("zIndex");
-			var clickable = feature.getProperty("clickable");
-			console.log(!!fillColor ? fillColor : styles.polygon.fillColor);
+		if (
+			featureType == featureTypes.polygon ||
+			featureType == featureTypes.multiPolygon
+		) {
+			var fillColor = feature.getProperty(constants.fill);
+			var fillOpacity = feature.getProperty(constants.fillOpacity);
+			var strokeColor = feature.getProperty(constants.stroke);
+			var strokeWeight = feature.getProperty(constants.strokeWidth);
+			var zIndex = feature.getProperty(constants.zIndex);
 			return {
-				fillColor: !!fillColor ? fillColor : styles.polygon.fillColor,
-				fillOpacity: !!fillOpacity ? fillOpacity : styles.polygon.fillOpacity,
-				strokeColor: !!strokeColor ? strokeColor : styles.polygon.strokeColor,
-				strokeWeight: !!strokeWeight
-					? strokeWeight
-					: styles.polygon.strokeWeight,
-				zIndex: !!zIndex ? !!zIndex : styles.polygon.zIndex,
-				clickable: clickable == true ? true : false,
-				editable: isEditable == true ? true : false,
+				fillColor:
+					typeof fillColor !== "undefined"
+						? fillColor
+						: styles.polygon.fillColor,
+				fillOpacity:
+					typeof fillOpacity !== "undefined"
+						? fillOpacity
+						: styles.polygon.fillOpacity,
+				strokeColor:
+					typeof strokeColor !== "undefined"
+						? strokeColor
+						: styles.polygon.strokeColor,
+				strokeWeight:
+					typeof strokeWeight !== "undefined"
+						? strokeWeight
+						: styles.polygon.strokeWeight,
+				zIndex: typeof zIndex !== "undefined" ? zIndex : styles.polygon.zIndex,
+				clickable: true,
+				editable: false,
 			};
-		} else if (featureType == featureTypes.polyline) {
-			var strokeColor = feature.getProperty("strokeColor");
-			var strokeWeight = feature.getProperty("strokeWeight");
-			var zIndex = feature.getProperty("zIndex");
-			var clickable = feature.getProperty("clickable");
+		} else if (
+			featureType == featureTypes.polyline ||
+			featureType == featureTypes.lineString
+		) {
+			var strokeColor = feature.getProperty(constants.stroke);
+			var strokeWeight = feature.getProperty(constants.strokeWidth);
+			var zIndex = feature.getProperty(constants.zIndex);
 			return {
-				strokeColor: !!strokeColor ? strokeColor : styles.polyline.strokeColor,
-				strokeWeight: !!strokeWeight
-					? strokeWeight
-					: styles.polyline.strokeWeight,
-				zIndex: !!zIndex ? zIndex : styles.polyline.zIndex,
-				clickable: clickable == true ? true : false,
-				editable: isEditable == true ? true : false,
+				strokeColor:
+					typeof strokeColor !== "undefined"
+						? strokeColor
+						: styles.polyline.strokeColor,
+				strokeWeight:
+					typeof strokeWeight !== "undefined"
+						? strokeWeight
+						: styles.polyline.strokeWeight,
+				zIndex: typeof zIndex !== "undefined" ? zIndex : styles.polyline.zIndex,
+				clickable: true,
+				editable: false,
 			};
 		} else if (featureType == featureTypes.point) {
-			var icon = feature.getProperty("icon");
-			var label = feature.getProperty("label");
-			var zIndex = feature.getProperty("zIndex");
-			var clickable = feature.getProperty("clickable");
+			var icon = feature.getProperty(constants.icon);
+			var label = feature.getProperty(constants.label);
+			var zIndex = feature.getProperty(constants.zIndex);
 			return {
 				icon: icon,
 				label: label,
 				zIndex: !!zIndex ? zIndex : styles.marker.zIndex,
-				clickable: clickable == true ? true : false,
-				draggable: isEditable == true ? true : false,
+				clickable: true,
+				draggable: false,
 			};
 		}
 		return {
-			editable: isEditable == true ? true : false,
+			editable: false,
 		};
 	});
 }
@@ -602,7 +918,7 @@ function handleDrop(e) {
 			const reader = new FileReader();
 
 			reader.onload = function (e) {
-				loadGeoJsonString(reader.result);
+				loadGeoJsonStringEditing(reader.result);
 			};
 
 			reader.onerror = function (e) {
@@ -617,7 +933,7 @@ function handleDrop(e) {
 		console.log(plainText);
 
 		if (plainText) {
-			loadGeoJsonString(plainText);
+			loadGeoJsonStringEditing(plainText);
 		}
 	}
 	// prevent drag event from bubbling further

@@ -4,7 +4,8 @@
 		{
 			"type": "Feature",
 			"properties": {
-				"name": "Black Sea"
+				"name": "Black Sea",
+				"fillColor":"red"
 			},
 			"geometry": {
 				"type": "Polygon",

@@ -18,7 +18,7 @@
 	<body>
 		<div>
 			<a href="index.html">View Map</a>
-			<a href="draw-map.html">Draw Map</a>
+			<a href="draw-map.html" target="_blank">Draw Map</a>
 		</div>
 		<div style="height: 100%; position: relative">
 			<div id="map"></div>
@@ -29,8 +29,9 @@
 	<script>
 		window.onload = function () {
 			initMap(false);
+			initEvents();
 			setTimeout(function () {
-				loadJson(map);
+				//loadGeoJsonStringDisplaying();
 				drawLegend(map);
 			}, 1000);
 		};
