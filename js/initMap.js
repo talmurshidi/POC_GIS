@@ -32,6 +32,7 @@ const constants = {
 	iconLabelOrigin: "labelOrigin",
 	iconSize: "size",
 	iconAnchor: "anchor",
+	hasIcon: "hasIcon",
 };
 // set default drawing styles
 const styles = {
@@ -102,7 +103,19 @@ const featureTypes = {
 	polyline: "polyline",
 	lineString: "linestring", // Used in GeoJson type
 };
-
+const customMarker = {
+	icon: {
+		path: google.maps.SymbolPath.CIRCLE,
+		scale: 0,
+		labelOrigin: new google.maps.Point(75, 0),
+	},
+	label: {
+		text: "",
+		color: "#C70E20",
+		fontWeight: "regular",
+		fontSize: "14px",
+	},
+};
 // Initialize map
 function initMap(isEditableShape) {
 	isEditable = isEditableShape;
@@ -469,8 +482,17 @@ function addFeature(type, path, properties, isEditable) {
 				var icon = getProperty(properties, constants.icon);
 				var label = getProperty(properties, constants.label);
 				var zIndex = getProperty(properties, constants.zIndex);
+				var hasIcon = getProperty(properties, constants.hasIcon);
+				var customIcon = {};
+				if (hasIcon) {
+					customIcon = icon;
+				} else {
+					customIcon["path"] = google.maps.SymbolPath.CIRCLE;
+					customIcon["scale"] = 0;
+					customIcon["labelOrigin"] = new google.maps.Point(75, 0);
+				}
 				style = {
-					icon: icon,
+					icon: customIcon,
 					label: label,
 					zIndex: typeof zIndex !== "undefined" ? zIndex : styles.marker.zIndex,
 					clickable: true,
@@ -480,7 +502,7 @@ function addFeature(type, path, properties, isEditable) {
 				style = styles.marker;
 			}
 
-			var marker = new google.maps.Marker(styles.marker);
+			var marker = new google.maps.Marker(style);
 
 			marker.setPosition(path);
 
@@ -532,6 +554,13 @@ function addPropertyToJSON(type, properties) {
 	) {
 		if (!properties.hasOwnProperty(constants.stroke)) {
 			properties[constants.stroke] = styles.polyline.strokeColor;
+		}
+	} else if (type == featureTypes.marker || type == featureTypes.point) {
+		if (!properties.hasOwnProperty(constants.hasIcon)) {
+			properties[constants.hasIcon] = true;
+		}
+		if (!properties.hasOwnProperty(constants.label)) {
+			properties[constants.label] = customMarker.label;
 		}
 	}
 }
