@@ -1,6 +1,7 @@
 .map-container {
   height: 100%;
-  width: 100%;
+  width: 90%;
+  float: left;
   position: relative;
   overflow: hidden;
 }
@@ -26,7 +27,7 @@
   overflow: hidden;
   left: 0;
   top: 0;
-  height: 99%;
+  height: 100%;
   width: 100%;
   position: relative !important;
 }
@@ -101,4 +102,16 @@ body {
 
 .delete-menu:hover {
   background: #eee;
+}
+
+.gm-style-mtc[style] {
+  width: 60px !important;
+}
+
+.gm-style-mtc > button {
+  font-size: 8px !important;
+}
+
+.clear {
+  clear: both;
 }

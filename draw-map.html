@@ -16,14 +16,25 @@
 		<title>Proof of concept GIS</title>
 	</head>
 	<body>
-		<div style="clear: both; overflow: auto">
-			<div style="padding: 20px">
+		<!--Navigation links-->
+		<div>
+			<div style="padding: 10px 20px">
 				<a href="index.html">View Map</a>
 				<a href="draw-map.html">Draw Map</a>
 				<a href="draw-map.html" target="_blank">New Draw Map</a>
 			</div>
-			<div style="float: left">
-				<h3>Image properties</h3>
+		</div>
+
+		<!-- Map control with background -->
+		<div class="map-container">
+			<img id="map-bg" src="1.jpg" class="map-bg" alt="" />
+			<div id="map" style="opacity: 1"></div>
+		</div>
+
+		<!--Properties controls-->
+		<div style="overflow: auto; width: 10%">
+			<div>
+				<h4>Image properties</h4>
 				<input
 					type="file"
 					id="select_image"
@@ -40,7 +51,9 @@
 						<button onclick="imageScaleDown()">-</button>
 					</div>
 				</div>
-				<div style="float: left">
+
+				<div class="clear"></div>
+				<div>
 					<p>Position</p>
 					<div>
 						<button onclick="imagePosition('up')">Up</button>
@@ -52,8 +65,11 @@
 					</div>
 				</div>
 			</div>
-			<div style="float: left">
-				<h3>Map properties</h3>
+
+			<div class="clear"></div>
+
+			<div>
+				<h4>Map properties</h4>
 				<div style="float: left">
 					<p>Opacity</p>
 					<div>
@@ -62,10 +78,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="map-container">
-			<img id="map-bg" class="map-bg" alt="" />
-			<div id="map"></div>
 		</div>
 
 		<table style="width: 800px">

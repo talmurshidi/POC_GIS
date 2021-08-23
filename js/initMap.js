@@ -5,6 +5,7 @@ var isEditable = false;
 var features = {
 	polygons: [],
 	multiPolygons: [],
+	multiLineString: [],
 	polylines: [],
 	markers: [],
 };
@@ -22,6 +23,15 @@ const constants = {
 	strokeWidth: "stroke-width",
 	icon: "icon",
 	label: "label",
+	fontSize: "fontSize",
+	text: "text",
+	color: "color",
+	fontWeight: "fontWeight",
+	iconPath: "path",
+	iconScale: "scale",
+	iconLabelOrigin: "labelOrigin",
+	iconSize: "size",
+	iconAnchor: "anchor",
 };
 // set default drawing styles
 const styles = {
@@ -61,15 +71,39 @@ const styles = {
 		// },
 	},
 };
+// set default drawing manager styles
+const drawingStyles = {
+	polygon: {
+		fillColor: "#555555",
+		fillOpacity: 0.2,
+		strokeColor: "#000000",
+		strokeWeight: 2,
+		clickable: true,
+		editable: true,
+		zIndex: 1,
+	},
+	polyline: {
+		strokeColor: "red",
+		strokeWeight: 2,
+		strokeOpacity: 1,
+		clickable: true,
+		editable: true,
+		zIndex: 2,
+	},
+	marker: styles.marker,
+};
+// Features types constants
 const featureTypes = {
 	polygon: "polygon",
 	multiPolygon: "multipolygon",
+	multiLineString: "multilinestring",
 	marker: "marker",
 	point: "point", // Used in GeoJson type
 	polyline: "polyline",
 	lineString: "linestring", // Used in GeoJson type
 };
 
+// Initialize map
 function initMap(isEditableShape) {
 	isEditable = isEditableShape;
 	var mapCanvas = document.getElementById("map");
@@ -125,46 +159,8 @@ function initMap(isEditableShape) {
 	};
 
 	if (isEditableShape == true) {
-		mapOptions["mapTypeId"] = "hybrid";
+		mapOptions["mapTypeId"] = "roadmap";
 	} else {
-		// var mapStyles = [
-		// 	{
-		// 		featureType: "all",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "administrative",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "landscape",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "poi",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "road",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "transit",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// 	{
-		// 		featureType: "water",
-		// 		elementType: "labels",
-		// 		stylers: [{ visibility: "off" }],
-		// 	},
-		// ];
-		// mapOptions["styles"] = mapStyles;
 		mapOptions["mapTypeControl"] = false;
 		// mapOptions["zoomControl"] = true;
 	}
@@ -211,10 +207,6 @@ function initMap(isEditableShape) {
 	map = new google.maps.Map(mapCanvas, mapOptions);
 
 	if (isEditableShape) {
-		// Change Polyline stroke color
-		styles.polyline.strokeColor = "red";
-		styles.polygon.strokeWeight = 2;
-
 		//initialize a common Drawing Manager object
 		//we will use only one Drawing Manager
 		drawingManager = new google.maps.drawing.DrawingManager({
@@ -235,9 +227,9 @@ function initMap(isEditableShape) {
 			// polygonOptions: { editable: true }, // polygons created are editable by default
 			// polylineOptions: { editable: true }, // polylines created are editable by default
 
-			markerOptions: styles.marker, // markers created are editable by default
-			polygonOptions: styles.polygon, // polygons created are editable by default
-			polylineOptions: styles.polyline, // polylines created are editable by default
+			markerOptions: drawingStyles.marker, // markers created are editable by default
+			polygonOptions: drawingStyles.polygon, // polygons created are editable by default
+			polylineOptions: drawingStyles.polyline, // polylines created are editable by default
 		});
 
 		drawingManager.setMap(map);
@@ -399,6 +391,7 @@ function addFeature(type, path, properties, isEditable) {
 
 			break;
 
+		// case featureTypes.multiLineString:
 		case featureTypes.lineString:
 		case featureTypes.polyline:
 			if (Object.keys(properties).length) {
@@ -532,7 +525,11 @@ function addPropertyToJSON(type, properties) {
 		if (!properties.hasOwnProperty(constants.fill)) {
 			properties[constants.fill] = styles.polygon.fillColor;
 		}
-	} else if (type == featureTypes.polyline || type == featureTypes.lineString) {
+	} else if (
+		type == featureTypes.polyline ||
+		type == featureTypes.lineString ||
+		type == featureTypes.multiLineString
+	) {
 		if (!properties.hasOwnProperty(constants.stroke)) {
 			properties[constants.stroke] = styles.polyline.strokeColor;
 		}
@@ -683,6 +680,14 @@ function featureAdded(e) {
 				isEditable
 			);
 			break;
+		// case featureTypes.multiLineString:
+		// 	addFeature(
+		// 		featureTypes.multiLineString,
+		// 		e.feature.getGeometry().getArray(),
+		// 		properties,
+		// 		isEditable
+		// 	);
+		// 	break;
 		case featureTypes.point:
 		case featureTypes.marker:
 			addFeature(
@@ -1031,4 +1036,23 @@ class DeleteMenu extends google.maps.OverlayView {
 		path.removeAt(vertex);
 		this.close();
 	}
+}
+
+/**
+ * Creates an array of coordinates from the content of the MultiGeometryCoordinates node of the GADM database.
+ */
+function buildCoordinatesArrayFromString(MultiGeometryCoordinates) {
+	var finalData = [];
+	var grouped = MultiGeometryCoordinates.split("\n");
+
+	grouped.forEach(function (item, i) {
+		let a = item.trim().split(",");
+
+		finalData.push({
+			lng: parseFloat(a[0]),
+			lat: parseFloat(a[1]),
+		});
+	});
+
+	return finalData;
 }
