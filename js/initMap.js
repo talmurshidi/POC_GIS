@@ -425,10 +425,9 @@ function addFeature(type, path, properties, isEditable) {
 				polygon.addListener("click", function (event) {
 					event.preventDefault;
 					var polygon = this;
-					clearSelection();
-					selectedShape = features.polygons.find(
-						({ shape }) => shape === polygon
-					);
+
+					feature = features.polygons.find(({ shape }) => shape === polygon);
+					setSelection(feature);
 
 					var properties = selectedShape.properties;
 					var tableString =
@@ -589,23 +588,19 @@ function addFeature(type, path, properties, isEditable) {
 			marker.setPosition(path);
 
 			if (isEditable) {
-				marker.addListener(
-					"click",
-					function (event) {
-						var marker = this;
-						clearSelection();
-						selectedShape = features.markers.find(
-							({ shape }) => shape === marker
-						);
+				marker.addListener("click", function (event) {
+					var marker = this;
 
-						var properties = selectedShape.properties;
-						var tableString =
-							createTableInfoWindowEditingShapeProperty(properties);
+					var feature = features.markers.find(({ shape }) => shape === marker);
 
-						openInfoWindowEditingShapeProperty(marker, tableString, event);
-					},
-					false
-				);
+					setSelection(feature);
+
+					var properties = selectedShape.properties;
+					var tableString =
+						createTableInfoWindowEditingShapeProperty(properties);
+
+					openInfoWindowEditingShapeProperty(marker, tableString, event);
+				});
 			}
 
 			var markerShape = {
@@ -622,7 +617,7 @@ function addFeature(type, path, properties, isEditable) {
 	}
 }
 
-function editingShape() {
+function setEditableShape() {
 	if (selectedShape) {
 		if (selectedShape.shape.hasOwnProperty("editable"))
 			selectedShape.shape.setEditable(!selectedShape.shape.getEditable());
@@ -663,11 +658,11 @@ function openInfoWindowEditingShapeProperty(feature, content, event) {
 
 	currentInfoWindow = new google.maps.InfoWindow();
 
-	currentInfoWindow.addListener("closeclick", () => {
-		// Handle focus manually.
-		clearSelection();
-		closeInfoWindowEditingShapeProperty();
-	});
+	// currentInfoWindow.addListener("closeclick", () => {
+	// 	// Handle focus manually.
+	// 	// clearSelection();
+	// 	closeInfoWindowEditingShapeProperty();
+	// });
 
 	currentInfoWindow.setContent(content);
 	currentInfoWindow.setPosition(event.latLng);
@@ -741,7 +736,7 @@ function createTableInfoWindowEditingShapeProperty(properties) {
     Add row
 	</div>
 	<button id="save-btn" onclick="saveChangedProperty()">Save</button>
-	<button id="edit-btn" onclick="editingShape()">Select Shape</button>
+	<button id="edit-btn" onclick="setEditableShape()">Select Shape</button>
 	<button id="delete-btn" style="color:red;" onclick="deleteFeature()">DELETE</button>
 	<button id="cancel-btn" onclick="closeInfoWindowEditingShapeProperty()">Cancel</button>
 	</div>`;
@@ -902,22 +897,23 @@ function closeInfoWindowEditingShapeProperty() {
 
 function clearSelection() {
 	if (selectedShape) {
-		if (
-			selectedShape.type == featureTypes.marker ||
-			selectedShape.type == featureTypes.point
-		)
-			selectedShape.shape.setDraggable(false);
-		else selectedShape.shape.setEditable(false);
+		if (selectedShape.shape.hasOwnProperty("editable"))
+			selectedShape.shape.setEditable(false);
+		else selectedShape.shape.setDraggable(false);
 		selectedShape = null;
 	}
 }
 
 function setSelection(feature) {
-	clearSelection();
-	selectedShape = feature;
-	if (feature.type == featureTypes.marker || feature.type == featureTypes.point)
-		feature.shape.setDraggable(true);
-	else feature.shape.setEditable(true);
+	if (feature) {
+		if (feature != selectedShape) {
+			clearSelection();
+			selectedShape = feature;
+			// if (selectedShape.shape.hasOwnProperty("editable"))
+			// 	feature.shape.setEditable(true);
+			// else feature.shape.setDraggable(true);
+		}
+	}
 }
 
 function overlayClickListener(overlay) {
