@@ -6,14 +6,8 @@ let currentInfoWindow = null;
 var isEditable = false;
 var deletedFeatures = [];
 var fontSizeZoom = {
-	isZoom1: false,
-	isZoom2: false,
-	isZoom3: false,
-	isZoom4: false,
-	isZoom5: false,
-	isZoom6: false,
-	isZoom7: false,
-	isZoom8: false,
+	oldSize: [],
+	newSize: [],
 };
 var features = {
 	polygons: [],
@@ -273,20 +267,25 @@ function initMap(isEditableShape) {
 	}
 
 	google.maps.event.addListener(map, "zoom_changed", function () {
-		// if (features.markers.length) {
-		// 	var zoom = map.getZoom();
-		// 	features.markers.forEach(function (marker) {
-		// 		var label = marker.shape.getLabel();
-		// 		if (label) {
-		// 			if (label.hasOwnProperty("fontSize")) {
-		// 				var fontSize = label["fontSize"];
-		// 				console.log(zoom);
-		// 				label["fontSize"] = getMarkerNewTextSize(fontSize, zoom);
-		// 				marker.shape.setLabel(label);
-		// 			}
-		// 		}
-		// 	});
-		// }
+		if (features.markers.length) {
+			var zoom = map.getZoom();
+			features.markers.forEach(function (marker) {
+				if (marker.properties.hasOwnProperty(constants.fontSize)) {
+					var fixedFontSize = marker.properties[constants.fontSize];
+					if (fixedFontSize && fixedFontSize != "") {
+						var label = marker.shape.getLabel();
+						if (label) {
+							if (label.hasOwnProperty("fontSize")) {
+								console.log("zoom: " + zoom);
+								label["fontSize"] = getMarkerNewTextSize(fixedFontSize, zoom);
+								console.log(label["fontSize"]);
+								marker.shape.setLabel(label);
+							}
+						}
+					}
+				}
+			});
+		}
 	});
 
 	google.charts.load("current", {
@@ -299,6 +298,7 @@ function initMap(isEditableShape) {
 function getMarkerNewTextSize(currentFontSize, zoom) {
 	currentFontSize = currentFontSize.replace("px", "");
 	var newFontSize = parseFloat(currentFontSize) + (parseFloat(zoom) - 1) * 2;
+	// var newFontSize = Math.round((zoom / 22) * 50);
 	return newFontSize + "px";
 }
 
@@ -430,8 +430,10 @@ function addFeature(type, path, properties, isEditable) {
 					setSelection(feature);
 
 					var properties = selectedShape.properties;
-					var tableString =
-						createTableInfoWindowEditingShapeProperty(properties);
+					var tableString = createTableInfoWindowEditingShapeProperty(
+						feature.type,
+						properties
+					);
 
 					openInfoWindowEditingShapeProperty(polygon, tableString, event);
 				});
@@ -500,14 +502,18 @@ function addFeature(type, path, properties, isEditable) {
 			if (isEditable) {
 				polyline.addListener("click", function (event) {
 					var polyline = this;
-					clearSelection();
-					selectedShape = features.polylines.find(
+
+					var feature = features.polylines.find(
 						({ shape }) => shape === polyline
 					);
 
+					setSelection(feature);
+
 					var properties = selectedShape.properties;
-					var tableString =
-						createTableInfoWindowEditingShapeProperty(properties);
+					var tableString = createTableInfoWindowEditingShapeProperty(
+						feature.type,
+						properties
+					);
 
 					openInfoWindowEditingShapeProperty(polyline, tableString, event);
 				});
@@ -596,8 +602,10 @@ function addFeature(type, path, properties, isEditable) {
 					setSelection(feature);
 
 					var properties = selectedShape.properties;
-					var tableString =
-						createTableInfoWindowEditingShapeProperty(properties);
+					var tableString = createTableInfoWindowEditingShapeProperty(
+						feature.type,
+						properties
+					);
 
 					openInfoWindowEditingShapeProperty(marker, tableString, event);
 				});
@@ -670,8 +678,8 @@ function openInfoWindowEditingShapeProperty(feature, content, event) {
 	currentInfoWindow.open(map, feature.shape);
 }
 
-function createTableInfoWindowEditingShapeProperty(properties) {
-	var tableString = `<div><table id="property-content">`;
+function createTableInfoWindowEditingShapeProperty(type, properties) {
+	var tableString = `<div>${type}</div><div><table id="property-content">`;
 	var isHasIcon = false;
 	var isAddIcon = false;
 	var isChecked = false;
