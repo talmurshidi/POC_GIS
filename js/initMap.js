@@ -270,11 +270,6 @@ function initMap(isEditableShape) {
 
 		// Add drawing manager listener to handle completed overlay
 		drawingManagerListener();
-		google.maps.event.addListener(
-			drawingManager,
-			"drawingmode_changed",
-			clearSelection
-		);
 	}
 
 	google.maps.event.addListener(map, "zoom_changed", function () {
@@ -907,9 +902,22 @@ function closeInfoWindowEditingShapeProperty() {
 
 function clearSelection() {
 	if (selectedShape) {
-		selectedShape.shape.setEditable(false);
+		if (
+			selectedShape.type == featureTypes.marker ||
+			selectedShape.type == featureTypes.point
+		)
+			selectedShape.shape.setDraggable(false);
+		else selectedShape.shape.setEditable(false);
 		selectedShape = null;
 	}
+}
+
+function setSelection(feature) {
+	clearSelection();
+	selectedShape = feature;
+	if (feature.type == featureTypes.marker || feature.type == featureTypes.point)
+		feature.shape.setDraggable(true);
+	else feature.shape.setEditable(true);
 }
 
 function overlayClickListener(overlay) {
