@@ -1,7 +1,20 @@
 let map; // Global variable
 let drawingManager;
 let infoWindow;
+let selectedShape = null;
+let currentInfoWindow = null;
 var isEditable = false;
+var deletedFeatures = [];
+var fontSizeZoom = {
+	isZoom1: false,
+	isZoom2: false,
+	isZoom3: false,
+	isZoom4: false,
+	isZoom5: false,
+	isZoom6: false,
+	isZoom7: false,
+	isZoom8: false,
+};
 var features = {
 	polygons: [],
 	multiPolygons: [],
@@ -18,21 +31,22 @@ const constants = {
 	name: "name",
 	fill: "fill",
 	stroke: "stroke",
+	strokeOpacity: "stroke-opacity",
 	zIndex: "z-index",
 	fillOpacity: "fill-opacity",
 	strokeWidth: "stroke-width",
 	icon: "icon",
 	label: "label",
-	fontSize: "fontSize",
+	fontSize: "font-size",
 	text: "text",
 	color: "color",
-	fontWeight: "fontWeight",
+	fontWeight: "font-weight",
 	iconPath: "path",
 	iconScale: "scale",
-	iconLabelOrigin: "labelOrigin",
+	iconLabelOrigin: "label-origin",
 	iconSize: "size",
 	iconAnchor: "anchor",
-	hasIcon: "hasIcon",
+	hasIcon: "has-icon",
 };
 // set default drawing styles
 const styles = {
@@ -91,7 +105,12 @@ const drawingStyles = {
 		editable: true,
 		zIndex: 2,
 	},
-	marker: styles.marker,
+	marker: {
+		icon: "https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red.png",
+		clickable: true,
+		draggable: false,
+		zIndex: 3,
+	},
 };
 // Features types constants
 const featureTypes = {
@@ -107,10 +126,10 @@ const customMarker = {
 	icon: {
 		path: google.maps.SymbolPath.CIRCLE,
 		scale: 0,
-		labelOrigin: new google.maps.Point(75, 0),
+		labelOrigin: { x: 0, y: 0 },
 	},
 	label: {
-		text: "",
+		text: "Label",
 		color: "#C70E20",
 		fontWeight: "regular",
 		fontSize: "14px",
@@ -173,6 +192,7 @@ function initMap(isEditableShape) {
 
 	if (isEditableShape == true) {
 		mapOptions["mapTypeId"] = "roadmap";
+		mapOptions["disableDoubleClickZoom"] = true;
 	} else {
 		mapOptions["mapTypeControl"] = false;
 		// mapOptions["zoomControl"] = true;
@@ -250,12 +270,41 @@ function initMap(isEditableShape) {
 
 		// Add drawing manager listener to handle completed overlay
 		drawingManagerListener();
+		google.maps.event.addListener(
+			drawingManager,
+			"drawingmode_changed",
+			clearSelection
+		);
 	}
+
+	google.maps.event.addListener(map, "zoom_changed", function () {
+		// if (features.markers.length) {
+		// 	var zoom = map.getZoom();
+		// 	features.markers.forEach(function (marker) {
+		// 		var label = marker.shape.getLabel();
+		// 		if (label) {
+		// 			if (label.hasOwnProperty("fontSize")) {
+		// 				var fontSize = label["fontSize"];
+		// 				console.log(zoom);
+		// 				label["fontSize"] = getMarkerNewTextSize(fontSize, zoom);
+		// 				marker.shape.setLabel(label);
+		// 			}
+		// 		}
+		// 	});
+		// }
+	});
 
 	google.charts.load("current", {
 		//callback: drawChart,
 		packages: ["bar", "corechart", "line", "table"],
 	});
+}
+
+// Set font size for givem zoom
+function getMarkerNewTextSize(currentFontSize, zoom) {
+	currentFontSize = currentFontSize.replace("px", "");
+	var newFontSize = parseFloat(currentFontSize) + (parseFloat(zoom) - 1) * 2;
+	return newFontSize + "px";
 }
 
 function drawingManagerListener() {
@@ -309,10 +358,20 @@ function drawingManagerListener() {
 			// createGeoJSON(gj);
 		}
 	);
+
+	google.maps.event.addListener(
+		drawingManager,
+		"drawingmode_changed",
+		clearSelection
+	);
 }
 
 function addFeature(type, path, properties, isEditable) {
-	if (properties == null || typeof properties == undefined) properties = {};
+	if (properties == null || typeof properties == undefined) {
+		properties = {};
+		addPropertyToJSON(type, properties);
+	}
+
 	var style = {};
 	switch (type) {
 		case featureTypes.multiPolygon:
@@ -369,8 +428,18 @@ function addFeature(type, path, properties, isEditable) {
 
 			if (isEditable) {
 				polygon.addListener("click", function (event) {
-					var isEditable = this.getEditable();
-					this.setEditable(!isEditable);
+					event.preventDefault;
+					var polygon = this;
+					clearSelection();
+					selectedShape = features.polygons.find(
+						({ shape }) => shape === polygon
+					);
+
+					var properties = selectedShape.properties;
+					var tableString =
+						createTableInfoWindowEditingShapeProperty(properties);
+
+					openInfoWindowEditingShapeProperty(polygon, tableString, event);
 				});
 			}
 			// polygon.addListener("remove_at", function () {
@@ -396,6 +465,7 @@ function addFeature(type, path, properties, isEditable) {
 			var polygonShape = {
 				shape: polygon,
 				properties: properties,
+				type: featureTypes.polygon,
 			};
 
 			features.polygons.push(polygonShape);
@@ -435,8 +505,17 @@ function addFeature(type, path, properties, isEditable) {
 
 			if (isEditable) {
 				polyline.addListener("click", function (event) {
-					var isEditable = this.getEditable();
-					this.setEditable(!isEditable);
+					var polyline = this;
+					clearSelection();
+					selectedShape = features.polylines.find(
+						({ shape }) => shape === polyline
+					);
+
+					var properties = selectedShape.properties;
+					var tableString =
+						createTableInfoWindowEditingShapeProperty(properties);
+
+					openInfoWindowEditingShapeProperty(polyline, tableString, event);
 				});
 			}
 
@@ -468,6 +547,7 @@ function addFeature(type, path, properties, isEditable) {
 			var polylineShape = {
 				shape: polyline,
 				properties: properties,
+				type: featureTypes.polyline,
 			};
 
 			features.polylines.push(polylineShape);
@@ -487,9 +567,16 @@ function addFeature(type, path, properties, isEditable) {
 				if (hasIcon) {
 					customIcon = icon;
 				} else {
-					customIcon["path"] = google.maps.SymbolPath.CIRCLE;
-					customIcon["scale"] = 0;
-					customIcon["labelOrigin"] = new google.maps.Point(75, 0);
+					// customIcon["path"] = google.maps.SymbolPath.CIRCLE;
+					customIcon["path"] = "M -2,-2 2,-2 2,2 -2,2 z"; // Square
+					// customIcon["path"] = "M 4.375 0 C 10.5 0 10.5 8.75 4.375 8.75 C -1.75 8.75 -1.75 0 4.375 0"; // Circle
+					customIcon["scale"] = 4;
+					customIcon["fillColor"] = "transparent";
+					customIcon["fillOpacity"] = 0;
+					customIcon["strokeWeight"] = 0;
+					customIcon["strokeOpacity"] = 0;
+					// customIcon["labelOrigin"] = new google.maps.Point(0, 0);
+					customIcon["labelOrigin"] = { x: 0, y: 0 };
 				}
 				style = {
 					icon: customIcon,
@@ -507,20 +594,29 @@ function addFeature(type, path, properties, isEditable) {
 			marker.setPosition(path);
 
 			if (isEditable) {
-				marker.addListener("click", function (event) {
-					var isDraggable = this.getDraggable();
-					this.setDraggable(!isDraggable);
-				});
-			}
+				marker.addListener(
+					"click",
+					function (event) {
+						var marker = this;
+						clearSelection();
+						selectedShape = features.markers.find(
+							({ shape }) => shape === marker
+						);
 
-			marker.addListener("rightclick", function (e) {
-				marker.setMap(null);
-				features.markers = features.markers.shape.filter(isValid);
-			});
+						var properties = selectedShape.properties;
+						var tableString =
+							createTableInfoWindowEditingShapeProperty(properties);
+
+						openInfoWindowEditingShapeProperty(marker, tableString, event);
+					},
+					false
+				);
+			}
 
 			var markerShape = {
 				shape: marker,
 				properties: properties,
+				type: featureTypes.marker,
 			};
 
 			features.markers.push(markerShape);
@@ -528,6 +624,291 @@ function addFeature(type, path, properties, isEditable) {
 			marker.setMap(map);
 
 			break;
+	}
+}
+
+function editingShape() {
+	if (selectedShape) {
+		if (selectedShape.shape.hasOwnProperty("editable"))
+			selectedShape.shape.setEditable(!selectedShape.shape.getEditable());
+		else selectedShape.shape.setDraggable(!selectedShape.shape.getDraggable());
+	}
+	closeInfoWindowEditingShapeProperty();
+}
+
+function deleteFeature() {
+	if (selectedShape) {
+		deletedFeatures.push(selectedShape);
+		selectedShape.shape.setMap(null);
+		if (selectedShape.type == featureTypes.marker)
+			features.markers = features.markers.filter(isValid);
+		else if (selectedShape.type == featureTypes.polyline)
+			features.polylines = features.polylines.filter(isValid);
+		else if (selectedShape.type == featureTypes.polygon)
+			features.polygons = features.polygons.filter(isValid);
+	}
+	closeInfoWindowEditingShapeProperty();
+	clearSelection();
+}
+
+function deleteUndo() {
+	if (deletedFeatures.length) {
+		var feature = deletedFeatures.pop();
+		feature.shape.setMap(map);
+		if (feature.type == featureTypes.marker) features.markers.push(feature);
+		else if (feature.type == featureTypes.polyline)
+			features.polylines.push(feature);
+		else if (feature.type == featureTypes.polygon)
+			features.polygons.push(feature);
+	}
+}
+
+function openInfoWindowEditingShapeProperty(feature, content, event) {
+	closeInfoWindowEditingShapeProperty();
+
+	currentInfoWindow = new google.maps.InfoWindow();
+
+	currentInfoWindow.addListener("closeclick", () => {
+		// Handle focus manually.
+		clearSelection();
+		closeInfoWindowEditingShapeProperty();
+	});
+
+	currentInfoWindow.setContent(content);
+	currentInfoWindow.setPosition(event.latLng);
+	currentInfoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -20) }); // move the infoWindow up slightly to the
+	currentInfoWindow.open(map, feature.shape);
+}
+
+function createTableInfoWindowEditingShapeProperty(properties) {
+	var tableString = `<div><table id="property-content">`;
+	var isHasIcon = false;
+	var isAddIcon = false;
+	var isChecked = false;
+	for (var k in properties) {
+		var value = properties[k];
+		if (typeof value !== "function") {
+			var valueInput = "";
+			if (
+				k == constants.fillOpacity ||
+				k == constants.strokeOpacity ||
+				k.toLocaleLowerCase().includes("opacity")
+			)
+				valueInput = `<input class="v" type="number" min="0" max="1" step="0.0" value="${value}">`;
+			else if (
+				k == constants.fill ||
+				k == constants.stroke ||
+				k.toLocaleLowerCase().includes("color")
+			) {
+				valueInput = `<input class="v" type="color" value="${value}">`;
+			} else if (k == constants.label) {
+				if (value instanceof Object) {
+					var objString = JSON.stringify(value, null, 2);
+					valueInput = `<textarea class="v" rows="8">${objString}</textarea>`;
+				} else valueInput = `<textarea class="v" rows="8">${value}</textarea>`;
+			} else if (k == constants.icon) {
+				isAddIcon = true;
+				// if (properties.hasOwnProperty(constants.hasIcon)) {
+				// 	var hasIconValue = getBoolean(properties[constants.hasIcon]);
+				// 	if (hasIconValue == true) {
+				if (value instanceof Object) {
+					var objString = JSON.stringify(value, null, 2);
+					valueInput = iconCellTemplate(objString);
+				} else valueInput = iconCellTemplate(value);
+				// 	}
+				// }
+			} else if (k == constants.zIndex || k == constants.strokeWidth) {
+				valueInput = `<input class="v" type="number" value="${value}">`;
+			} else if (k == constants.hasIcon) {
+				isHasIcon = true;
+				var checkboxValue = getBoolean(value);
+				isChecked = checkboxValue;
+				var checked = checkboxValue == true ? "checked" : "";
+				valueInput = `<input id="has-icon" onchange="markerHasIcon()" class="v" type="checkbox" value="${checkboxValue}" ${checked}>`;
+			} else valueInput = `<input class="v" type="text" value="${value}">`;
+
+			tableString += `<tr>
+			<th><input class="k" type="text" value="${k}"></th>
+			<th>${valueInput}</th>
+			</tr>`;
+		}
+	}
+
+	if (isAddIcon == false && isHasIcon == true && isChecked == true) {
+		tableString += `<tr>
+		<td>${keyCellTemplate("icon")}</td>
+		<td>${iconCellTemplate("")}</td>
+		</tr>`;
+	}
+
+	tableString += `</table>
+	<div style="cursor: pointer; color:blue;" onclick="addRow()">
+    Add row
+	</div>
+	<button id="save-btn" onclick="saveChangedProperty()">Save</button>
+	<button id="edit-btn" onclick="editingShape()">Select Shape</button>
+	<button id="delete-btn" style="color:red;" onclick="deleteFeature()">DELETE</button>
+	<button id="cancel-btn" onclick="closeInfoWindowEditingShapeProperty()">Cancel</button>
+	</div>`;
+
+	return tableString;
+}
+
+function keyCellTemplate(value) {
+	return `<input class="k" type="text" value="${value}">`;
+}
+
+function iconCellTemplate(value) {
+	return `<textarea id="marker-icon" class="v" rows="8">${value}</textarea>`;
+}
+
+function markerHasIcon() {
+	var checkBoxHasIcon = document.getElementById("has-icon");
+	var table = document.getElementById("property-content");
+	// checkBoxHasIcon.value = !checkBoxHasIcon.value;
+	if (checkBoxHasIcon.checked) {
+		addIconRow();
+	} else {
+		var markerInputIcon = document.getElementById("marker-icon");
+		if (markerInputIcon) {
+			var rowIndex = markerInputIcon.parentNode.parentNode.rowIndex;
+			table.deleteRow(rowIndex);
+		}
+	}
+}
+
+function saveChangedProperty() {
+	var table = document.getElementById("property-content");
+	var rows = table.rows;
+	var styleOptions = {};
+
+	for (var r = 0; r < rows.length; r++) {
+		var cells = rows[r].cells;
+		var key = "";
+		var val = "";
+		var valType = "";
+		for (var c = 0; c < cells.length; c++) {
+			var k = cells.item(c).getElementsByClassName("k");
+			var v = cells.item(c).getElementsByClassName("v");
+
+			if (k.length) key = k[0].value;
+
+			if (v.length) {
+				val = v[0].value;
+				valType = v[0].type;
+			}
+		}
+
+		if (key) {
+			if (valType === "textarea") {
+				try {
+					if (val) {
+						if (val.includes("{") && val.includes("}")) val = JSON.parse(val);
+					}
+				} catch (error) {
+					console.error(error);
+				}
+			} else if (valType === "number") val = parseFloat(val);
+			else if (valType === "checkbox") {
+				val = getBoolean(val);
+			} else if (val) {
+				try {
+					if (val.includes("{") && val.includes("}")) val = JSON.parse(val);
+				} catch (error) {
+					console.error(error);
+				}
+			}
+
+			selectedShape.properties[key] = val;
+
+			if (key === constants.fill) key = "fillColor";
+			else if (key === constants.stroke) key = "strokeColor";
+			else if (key === constants.fillOpacity) key = "fillOpacity";
+			else if (key === constants.strokeOpacity) key = "strokeOpacity";
+			else if (key === constants.strokeWidth) key = "strokeWeight";
+			else if (key === constants.fontWeight) key = "fontWeight";
+			else if (key === constants.zIndex) key = "zIndex";
+
+			styleOptions[key] = val;
+		}
+	}
+
+	var hasIcon = document.getElementById("has-icon");
+	if (hasIcon) {
+		if (hasIcon.checked == false) {
+			selectedShape.properties[constants.hasIcon] = false;
+			styleOptions[constants.hasIcon] = false;
+			if (selectedShape.properties.hasOwnProperty(constants.icon)) {
+				delete selectedShape.properties.icon;
+				delete styleOptions.icon;
+			} else {
+				styleOptions[constants.icon] = {
+					path: "M -2,-2 2,-2 2,2 -2,2 z",
+					scale: 4,
+					fillColor: "transparent",
+					strokeWeight: 0,
+					strokeOpacity: 0,
+					labelOrigin: { x: 0, y: 0 },
+				};
+			}
+		} else {
+			selectedShape.properties[constants.hasIcon] = true;
+			styleOptions[constants.hasIcon] = true;
+		}
+	}
+	styleOptions = JSON.parse(JSON.stringify(styleOptions));
+	selectedShape.shape.setOptions(styleOptions);
+}
+
+function getBoolean(value) {
+	switch (value) {
+		case true:
+		case "true":
+		case 1:
+		case "1":
+		case "on":
+		case "yes":
+			return true;
+		default:
+			return false;
+	}
+}
+
+function addIconRow() {
+	var hasIconInput = document.getElementById("has-icon");
+	if (hasIconInput) {
+		if (hasIconInput.checked) {
+			var newRow = document.createElement("tr");
+			var cell1 = newRow.insertCell(0);
+			var cell2 = newRow.insertCell(1);
+			cell1.innerHTML = `<input class="k" id="marker-icon" type="text" value="icon">`;
+			cell2.innerHTML = `<textarea rows="8" class="v" value="">`;
+			hasIconInput.parentNode.parentNode.parentNode.insertBefore(
+				newRow,
+				hasIconInput.nextSibling
+			);
+			hasIconInput = hasIconInput.nextSibling;
+		}
+	}
+}
+
+function addRow() {
+	var table = document.getElementById("property-content");
+	var row = table.insertRow(-1);
+	var cell1 = row.insertCell(0);
+	var cell2 = row.insertCell(1);
+	cell1.innerHTML = `<input class="k" type="text" value="">`;
+	cell2.innerHTML = `<input class="v" type="text" value="">`;
+}
+
+function closeInfoWindowEditingShapeProperty() {
+	if (currentInfoWindow != null) currentInfoWindow.close();
+}
+
+function clearSelection() {
+	if (selectedShape) {
+		selectedShape.shape.setEditable(false);
+		selectedShape = null;
 	}
 }
 
@@ -559,9 +940,9 @@ function addPropertyToJSON(type, properties) {
 		if (!properties.hasOwnProperty(constants.hasIcon)) {
 			properties[constants.hasIcon] = true;
 		}
-		if (!properties.hasOwnProperty(constants.label)) {
-			properties[constants.label] = customMarker.label;
-		}
+		// if (!properties.hasOwnProperty(constants.label)) {
+		// 	properties[constants.label] = customMarker.label;
+		// }
 	}
 }
 
@@ -570,7 +951,7 @@ function getProperty(properties, propertyName) {
 }
 
 function isValid(f) {
-	return f.getMap() != null;
+	return f.shape.getMap() != null;
 }
 
 function createGeoJSONOutput(dataGeoJSON) {
@@ -648,7 +1029,7 @@ function loadGeoJsonStringDisplaying(geoJson) {
 		map.data.addGeoJson(json);
 	});
 
-	featureStyle(false);
+	//featureStyle(false);
 
 	// map.data.addListener("click", function (event) {
 	// 	//let state = event.feature.getProperty("name");
@@ -668,7 +1049,8 @@ function loadGeoJsonStringEditing(geoString) {
 
 		const geojson = JSON.parse(geoString);
 		map.data.addGeoJson(geojson);
-		featureStyle(true);
+
+		//featureStyle(true);
 	} catch (e) {
 		console.log(e);
 		alert("Not a GeoJSON file!");
@@ -748,49 +1130,43 @@ function createGeoJSON() {
 
 	if (features.polygons.length) {
 		features.polygons.forEach(function (polygon, indexPolygon) {
-			if (polygon.shape) {
-				var paths = polygon.shape.getPaths();
-				var properties = polygon.properties;
-				addPropertyToJSON(featureTypes.polygon, properties);
-				paths.forEach(function (path, indexPath) {
-					if (typeof path !== "undefined") {
-						data.add({
-							properties: properties,
-							geometry: new google.maps.Data.Polygon([path.getArray()]),
-						});
-					}
-				});
-			}
+			var paths = polygon.shape.getPaths();
+			var properties = polygon.properties;
+			addPropertyToJSON(featureTypes.polygon, properties);
+			paths.forEach(function (path, indexPath) {
+				if (typeof path !== "undefined") {
+					data.add({
+						properties: properties,
+						geometry: new google.maps.Data.Polygon([path.getArray()]),
+					});
+				}
+			});
 		});
 	}
 
 	if (features.polylines.length) {
 		features.polylines.forEach(function (polyline, index) {
-			if (polyline.shape) {
-				var polylineShape = polyline.shape;
-				var properties = polyline.properties;
-				addPropertyToJSON(featureTypes.polyline, properties);
-				data.add({
-					properties: properties,
-					geometry: new google.maps.Data.LineString(
-						polylineShape.getPath().getArray()
-					),
-				});
-			}
+			var polylineShape = polyline.shape;
+			var properties = polyline.properties;
+			addPropertyToJSON(featureTypes.polyline, properties);
+			data.add({
+				properties: properties,
+				geometry: new google.maps.Data.LineString(
+					polylineShape.getPath().getArray()
+				),
+			});
 		});
 	}
 
 	if (features.markers.length) {
 		features.markers.forEach(function (marker, index) {
-			if (marker.shape) {
-				var markerShape = marker.shape;
-				var properties = marker.properties;
-				addPropertyToJSON(featureTypes.marker, properties);
-				data.add({
-					properties: properties,
-					geometry: new google.maps.Data.Point(markerShape.getPosition()),
-				});
-			}
+			var markerShape = marker.shape;
+			var properties = marker.properties;
+			addPropertyToJSON(featureTypes.marker, properties);
+			data.add({
+				properties: properties,
+				geometry: new google.maps.Data.Point(markerShape.getPosition()),
+			});
 		});
 	}
 
