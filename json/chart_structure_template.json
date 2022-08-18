@@ -1,0 +1,26 @@
+{
+	"legend_title":"",
+	"legends":
+	[
+		{
+			"name":"",
+			"color":""
+		}
+	],
+	"unit":"",
+	"chart_caption":"",
+	"chart_max_value":0,
+	"charts":
+	[
+		{
+			"country_name":"",
+			"properties":
+			[
+				{
+					"name":"",
+					"value":0
+				}
+			]
+		}
+	]
+}

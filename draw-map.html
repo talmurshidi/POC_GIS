@@ -1,0 +1,246 @@
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" href="#" />
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+
+	<title>Proof of concept GIS</title>
+</head>
+
+<body>
+	<!--Navigation links-->
+	<div class="container-fluid">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0 col-9">
+						<li class="nav-item">
+							<a class="nav-link" aria-current="page" href="index.html">Map Viewer</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="draw-map.html">Map Drawer</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="draw-map.html" target="_blank">New Map Drawer</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="row col-12">
+
+			<!--Import map-->
+			<div class="mb-2 col-6">
+				<div class="input-group input-group-sm">
+					<span for="select_map" class="input-group-text">Import Map (GeoJson)</span>
+					<input class="form-control form-control-sm shadow-none" accept=".geojson" id="select_map"
+						onchange="putMap()" type="file">
+				</div>
+			</div>
+
+			<!--Import image-->
+			<div class="mb-2 col-6">
+				<div class="input-group input-group-sm">
+					<span for="select_image" class="input-group-text">Import Image</span>
+					<input class="form-control form-control-sm shadow-none" accept="image/*" name="image"
+						id="select_image" onchange="putImage()" type="file">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Map control with background -->
+	<div class="map-container">
+		<img id="map-bg" class="map-bg" alt="" />
+		<div id="map" style="opacity: 1"></div>
+	</div>
+
+	<!--Properties controls-->
+	<div style="float: left; width: 10%">
+		<div class="row">
+
+			<label class="fw-bold">Image properties</label>
+
+			<h6>size</h6>
+			<input class="form-control shadow-none mb-2 col-auto" value="8" id="image-size-value" />
+			<div class="row">
+				<p>
+					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="imageScaleUp()">+</button>
+					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="imageScaleDown()">-</button>
+				</p>
+			</div>
+
+			<h6>Position</h6>
+			<div class="row">
+				<p>
+					<button class="btn btn-sm bg-secondary text-white col-auto"
+						onclick="imagePosition('up')">Up</button>
+					<button class="btn btn-sm bg-secondary text-white col-auto"
+						onclick="imagePosition('down')">Down</button>
+				</p>
+			</div>
+			<div class="row">
+				<p>
+					<button class="btn btn-sm bg-secondary text-white col-auto"
+						onclick="imagePosition('left')">Left</button>
+					<button class="btn btn-sm bg-secondary text-white col-auto"
+						onclick="imagePosition('right')">Right</button>
+				</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<label class="fw-bold">Map properties</label>
+			<h6>Opacity</h6>
+			<div class="row">
+				<p>
+					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="increaseOpacity()">+</button>
+					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="decreaseOpacity()">-</button>
+				</p>
+			</div>
+
+			<h6>Delete Undo</h6>
+			<div class="row">
+				<p>
+					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="deleteUndo()">Undo</button>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row mb-3 col-12"></div>
+
+		<div class="offset-5 row mb-3">
+			<p>
+				<button class="btn btn-md bg-primary col-auto text-white" id="create-json-btn" type="button"
+					onclick="createGeoJSON()">
+					Create
+				</button>
+				<button class="btn btn-md bg-secondary col-auto text-white" type="button" onclick="exportGeoJson()">
+					Export
+				</button>
+			</p>
+
+		</div>
+
+		<div class="row mb-3">
+			<label class="form-label" for="output">Output</label>
+			<textarea class="form-control shadow-none mt-1" rows="20" id="output"></textarea>
+		</div>
+
+	</div>
+</body>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script> -->
+<!--Google Maps-->
+<script
+	src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyBnY3rbBH--hIiQDkw25hFpFMKCn48MlSk"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/initMap.js" type="text/javascript"></script>
+<script src="js/geojson.min.js" type="text/javascript"></script>
+<script src="js/FileSaver.min.js" type="text/javascript"></script>
+
+<script>
+	window.onload = function () {
+		initDrawMap();
+	};
+
+	function showImage(src, target) {
+		var fr = new FileReader();
+
+		fr.onload = function () {
+			target.src = fr.result;
+		};
+		fr.readAsDataURL(src.files[0]);
+	}
+
+	function putImage() {
+		var src = document.getElementById("select_image");
+		var target = document.getElementById("map-bg");
+		showImage(src, target);
+	}
+
+	function imageScaleUp() {
+		var img = document.getElementById("map-bg");
+		var sizeValue = document.getElementById("image-size-value").value;
+		var sizeInt = parseInt(sizeValue);
+		img.height = img.height + sizeInt;
+		img.width = img.width + sizeInt;
+	}
+
+	function imageScaleDown() {
+		var img = document.getElementById("map-bg");
+		var sizeValue = document.getElementById("image-size-value").value;
+		var sizeInt = parseInt(sizeValue);
+		img.height = img.height - sizeInt;
+		img.width = img.width - sizeInt;
+	}
+
+	function increaseOpacity() {
+		var map = document.getElementById("map");
+		var mapOpacity = parseFloat(map.style.opacity);
+		if (mapOpacity != 1) map.style.opacity = mapOpacity + 0.1;
+	}
+
+	function decreaseOpacity() {
+		var map = document.getElementById("map");
+		var mapOpacity = parseFloat(map.style.opacity);
+		if (mapOpacity != 0) map.style.opacity = mapOpacity - 0.1;
+	}
+
+	function imagePosition(position) {
+		var mapBg = document.getElementById("map-bg");
+		var newPosition = 0;
+
+		if (position == "up") {
+			if (mapBg.style.top === "") mapBg.style.top = 0;
+			var mapBgTop = parseFloat(mapBg.style.top);
+			newPosition = mapBgTop - 10;
+			mapBg.style.top = newPosition + "px";
+		}
+
+		if (position == "down") {
+			if (mapBg.style.top === "") mapBg.style.top = 0;
+			var mapBgTop = parseFloat(mapBg.style.top);
+			newPosition = mapBgTop + 10;
+			mapBg.style.top = newPosition + "px";
+		}
+
+		if (position == "left") {
+			if (mapBg.style.left === "") mapBg.style.left = 0;
+			var mapBgLeft = parseFloat(mapBg.style.left);
+			newPosition = mapBgLeft - 10;
+			mapBg.style.left = newPosition + "px";
+		}
+
+		if (position == "right") {
+			if (mapBg.style.left === "") mapBg.style.left = 0;
+			var mapBgLeft = parseFloat(mapBg.style.left);
+			newPosition = mapBgLeft + 10;
+			mapBg.style.left = newPosition + "px";
+		}
+	}
+
+	function mapZoom(zoomOption) {
+		if (zoomOption == "in") map.setZoom(map.getZoom() + 1);
+		if (zoomOption == "out") map.setZoom(map.getZoom() - 1);
+	}
+</script>
+
+</html>

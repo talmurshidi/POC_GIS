@@ -1,0 +1,28 @@
+.gm-style .gm-style-iw-d::-webkit-scrollbar-track,
+.gm-style .gm-style-iw-d::-webkit-scrollbar-track-piece,
+.gm-style .gm-style-iw-c,
+.gm-style .gm-style-iw-t::after {
+    background: transparent;
+    box-shadow: none;
+    padding: 0px !important;
+    border-radius: 0px;
+}
+
+.gm-style .gm-style-iw-tc::after {
+    background-color: transparent;
+    padding: 0px !important;
+    display: none;
+}
+
+.gm-style .gm-style-iw-d {
+    overflow: hidden !important; 
+     padding: 0px !important;
+}
+
+button.gm-ui-hover-effect {
+    /* display: none !important;  */
+    background-color: red !important;
+    opacity: 1;
+    height: 24px !important;
+    width: 26px !important;
+}

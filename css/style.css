@@ -1,0 +1,130 @@
+.map-container {
+  height: 100%;
+  width: 90%;
+  float: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-bg {
+  position: absolute;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 180%;
+  height: auto;
+  /* background-image: url('../1.jpg'); */
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+#map {
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: relative !important;
+}
+
+/* Optional: Makes the sample page fill the window. */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#legend {
+  font-family: Arial, sans-serif;
+  background: #fff;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid rgb(80, 78, 78);
+  max-width: 140px;
+}
+
+#legend div {
+  margin-top: 2;
+  margin-bottom: 2px;
+}
+
+#legend #legend-title {
+  margin-top: 2;
+  margin-bottom: 10px;
+  font-weight: 500;
+  font-size: small;
+}
+
+#legend img {
+  vertical-align: middle;
+}
+
+.legend-color-box {
+  font: 400 11px Roboto, Arial, sans-serif;
+  font-family: Arial, sans-serif;
+  height: 18px;
+  width: 18px;
+  border-radius: 3px;
+  float: left;
+  border: 1px solid black;
+  margin-right: 6px;
+}
+
+.delete-menu {
+  position: absolute;
+  background: white;
+  padding: 3px;
+  color: #666;
+  font-weight: bold;
+  border: 1px solid #999;
+  font-family: sans-serif;
+  font-size: 12px;
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.3);
+  margin-top: -10px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.delete-menu:hover {
+  background: #eee;
+}
+
+.gm-style-mtc[style] {
+  width: 60px !important;
+}
+
+.gm-style-mtc > button {
+  font-size: 8px !important;
+}
+
+.clear {
+  clear: both;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+td {
+  font-size: 12px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}

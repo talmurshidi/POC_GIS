@@ -1,0 +1,191 @@
+<head>
+	<script>
+		function initMap() {
+			var map = new google.maps.Map(document.getElementById("map"), {
+				center: {
+					lat: -40.6892,
+					lng: 74.0445,
+				},
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.HYBRID,
+			});
+
+			var polyOptions = {
+				strokeWeight: 0,
+				fillOpacity: 0.45,
+				strokeColor: "#FF0000",
+				strokeOpacity: 0.8,
+				strokeWeight: 2,
+				fillColor: "#FF0000",
+				fillOpacity: 0.35,
+			};
+			// loads databased saved coordinates
+			var propertyCoords = "";
+			var points = [
+				{
+					lat: 25.774,
+					lng: -80.19,
+				},
+				{
+					lat: 18.466,
+					lng: -66.118,
+				},
+				{
+					lat: 32.321,
+					lng: -64.757,
+				},
+				{
+					lat: 25.774,
+					lng: -80.19,
+				},
+			];
+
+			var existingPolygon = null;
+
+			var drawingManager = null;
+
+			if (typeof points !== "undefined") {
+				if (!google.maps.Polygon.prototype.getBounds) {
+					google.maps.Polygon.prototype.getBounds = function () {
+						var bounds = new google.maps.LatLngBounds();
+						this.getPath().forEach(function (element, _) {
+							bounds.extend(element);
+						});
+						return bounds;
+					};
+				}
+
+				/**
+				 * used for tracking polygon bounds changes within the drawing manager
+				 */
+				google.maps.Polygon.prototype.enableCoordinatesChangedEvent =
+					function () {
+						var me = this,
+							isBeingDragged = false,
+							triggerCoordinatesChanged = function () {
+								//broadcast normalized event
+								google.maps.event.trigger(me, "coordinates_changed");
+							};
+
+						//if  the overlay is being dragged, set_at gets called repeatedly, so either we can debounce that or igore while dragging, ignoring is more efficient
+						google.maps.event.addListener(me, "dragstart", function () {
+							isBeingDragged = true;
+						});
+
+						//if the overlay is dragged
+						google.maps.event.addListener(me, "dragend", function () {
+							triggerCoordinatesChanged();
+							isBeingDragged = false;
+						});
+
+						//or vertices are added to any of the possible paths, or deleted
+						var paths = me.getPaths();
+						paths.forEach(function (path, i) {
+							google.maps.event.addListener(path, "insert_at", function () {
+								triggerCoordinatesChanged();
+							});
+							google.maps.event.addListener(path, "set_at", function () {
+								if (!isBeingDragged) {
+									triggerCoordinatesChanged();
+								}
+							});
+							google.maps.event.addListener(path, "remove_at", function () {
+								triggerCoordinatesChanged();
+							});
+						});
+					};
+
+				function extractPolygonPoints(data) {
+					var MVCarray = data.getPath().getArray();
+
+					var to_return = MVCarray.map(function (point) {
+						return `(${point.lat()},${point.lng()})`;
+					});
+					// first and last must be same
+					return to_return.concat(to_return[0]).join(",");
+				}
+
+				existingPolygon = new google.maps.Polygon({
+					paths: points,
+					editable: true,
+					draggable: false,
+					map: map,
+					...polyOptions,
+				});
+				map.fitBounds(existingPolygon.getBounds());
+
+				existingPolygon.enableCoordinatesChangedEvent();
+
+				google.maps.event.addListener(
+					existingPolygon,
+					"coordinates_changed",
+					function () {
+						console.warn(
+							"coordinates changed!",
+							extractPolygonPoints(existingPolygon)
+						);
+					}
+				);
+				// My guess is to use a conditional statement to check if the map has any coordinates saved?
+			} else {
+				drawingManager = new google.maps.drawing.DrawingManager({
+					drawingMode: google.maps.drawing.OverlayType.POLYGON,
+					drawingControlOptions: {
+						position: google.maps.ControlPosition.TOP_CENTER,
+						drawingModes: ["polygon"],
+					},
+					polylineOptions: {
+						editable: true,
+						draggable: true,
+					},
+					rectangleOptions: polyOptions,
+					circleOptions: polyOptions,
+					polygonOptions: polyOptions,
+					map: map,
+				});
+
+				google.maps.event.addListener(
+					drawingManager,
+					"overlaycomplete",
+					function (e) {
+						if (e.type !== google.maps.drawing.OverlayType.MARKER) {
+							// Switch back to non-drawing mode after drawing a shape.
+							drawingManager.setDrawingMode(null);
+							// Add an event listener that selects the newly-drawn shape when the user
+							// mouses down on it.
+							var newShape = e.overlay;
+							newShape.type = e.type;
+							google.maps.event.addListener(newShape, "click", function (e) {
+								if (e.vertex !== undefined) {
+									if (
+										newShape.type === google.maps.drawing.OverlayType.POLYGON
+									) {
+										var path = newShape.getPaths().getAt(e.path);
+										path.removeAt(e.vertex);
+										if (path.length < 3) {
+											newShape.setMap(null);
+										}
+									}
+								}
+								setSelection(newShape);
+							});
+						}
+						var coords = e.overlay.getPath().getArray();
+						document.getElementById("propertyCoordinates").value = coords;
+					}
+				);
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<div id="propertyCoordinates"></div>
+	<div id="map" style="width: 100vw; height: 100vh"></div>
+
+	<script
+		async
+		defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnY3rbBH--hIiQDkw25hFpFMKCn48MlSk&callback=initMap&libraries=drawing,geometry"
+	></script>
+</body>

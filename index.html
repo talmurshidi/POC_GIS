@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" href="#" />
+	<link rel="stylesheet" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/map-style.css" />
+
+	<title>Proof of concept GIS</title>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0 col-9">
+						<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="index.html">Map Viewer</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="draw-map.html" target="_blank">Map Drawer</a>
+						</li>
+					</ul>
+
+					<div>
+						<div class="input-group-text">
+							<input class="form-check-input mt-0 shadow-none" type="checkbox" value=""
+								aria-label="Checkbox for following text input" id="checkbox-hide-close-popup">
+							<label for="checkbox-hide-close-popup" class="form-control-sm">
+								Hide popup close button
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<div class="row col-12">
+
+			<!--Import map-->
+			<div class="mb-2 col-6">
+				<div class="input-group input-group-sm">
+					<span for="select_map" class="input-group-text">Import Map (GeoJson)</span>
+					<input class="form-control form-control-sm shadow-none" accept=".geojson" id="select_map"
+						onchange="putMap()" type="file">
+				</div>
+			</div>
+
+			<!--Import charts-->
+			<div class="mb-2 col-6">
+				<div class="input-group input-group-sm">
+					<span for="select_chart" class="input-group-text">Import Charts (JSON)</span>
+					<input class="form-control form-control-sm shadow-none" accept=".json" id="select_chart"
+						onchange="putChart()" type="file">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div style="height: 100%; position: relative">
+		<div id="map"></div>
+		<!-- <div id="legend">
+			<div id="legend-title"></div>
+		</div> -->
+	</div>
+</body>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/FileSaver.min.js" type="text/javascript"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script> -->
+<!--Google Maps-->
+<script
+	src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyBnY3rbBH--hIiQDkw25hFpFMKCn48MlSk"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/initMap.js" type="text/javascript"></script>
+<script src="js/drawChart.js" type="text/javascript"></script>
+
+<script>
+	window.onload = function () {
+		initViewMap();
+		setTimeout(function () {
+			//loadGeoJsonStringDisplaying();
+			// drawLegend(map);
+		}, 1000);
+	};
+</script>
+
+</html>

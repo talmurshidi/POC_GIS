@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>GeoJSON to Google Maps</title>
+		<style type="text/css">
+			#wrapper {
+				width: 1000px;
+				margin: 0 auto;
+			}
+			#map {
+				float: left;
+				width: 500px;
+				height: 500px;
+			}
+			#geojson {
+				float: left;
+				width: 480px;
+				padding: 10px;
+			}
+			html,
+			body {
+				padding: 0px;
+				margin: 0px;
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+
+		<script
+			type="text/javascript"
+			src="http://maps.google.com/maps/api/js?sensor=false"
+		></script>
+		<script type="text/javascript" src="js/jquery-3.6.0.js"></script>
+		<script type="text/javascript" src="js/GeoJSON.js"></script>
+		<script type="text/javascript">
+			var map;
+			currentFeature_or_Features = null;
+
+			var geojson_Polygon = {
+				type: "Polygon",
+				coordinates: [
+					[
+						[-80.662120612605904, 35.042875219905184],
+						[-80.662141716053014, 35.042832740965068],
+						[-80.662171938563816, 35.042789546962993],
+						[-80.662209174653029, 35.042750233165179],
+						[-80.662250709107454, 35.042716920859959],
+						[-80.662627586829899, 35.043072078075667],
+						[-80.662595574310288, 35.043162322407341],
+						[-80.662142312824884, 35.043015448098977],
+						[-80.662145396323511, 35.042970839922489],
+						[-80.662117972448982, 35.042908385949438],
+						[-80.662120612605904, 35.042875219905184],
+					],
+				],
+			};
+
+			function init() {
+				map = new google.maps.Map(document.getElementById("map"), {
+					zoom: 17,
+					center: new google.maps.LatLng(35.042248, -80.662319),
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+				});
+
+				showFeature(geojson_Polygon);
+			}
+			function clearMap() {
+				if (!currentFeature_or_Features) return;
+				if (currentFeature_or_Features.length) {
+					for (var i = 0; i < currentFeature_or_Features.length; i++) {
+						currentFeature_or_Features[i].setMap(null);
+					}
+				} else {
+					currentFeature_or_Features.setMap(null);
+				}
+			}
+
+			function showFeature(geojson, style) {
+				clearMap();
+				currentFeature_or_Features = new GeoJSON(geojson, style || null);
+				if (
+					currentFeature_or_Features.type &&
+					currentFeature_or_Features.type == "Error"
+				) {
+					document.getElementById("put_geojson_string_here").value =
+						currentFeature_or_Features.message;
+					return;
+				}
+				if (currentFeature_or_Features.length) {
+					for (var i = 0; i < currentFeature_or_Features.length; i++) {
+						currentFeature_or_Features[i].setMap(map);
+					}
+				} else {
+					currentFeature_or_Features.setMap(map);
+				}
+			}
+			function rawGeoJSON() {
+				clearMap();
+				currentFeature_or_Features = new GeoJSON(
+					JSON.parse(document.getElementById("put_geojson_string_here").value)
+				);
+				if (currentFeature_or_Features.length) {
+					for (var i = 0; i < currentFeature_or_Features.length; i++) {
+						currentFeature_or_Features[i].setMap(map);
+					}
+				} else {
+					currentFeature_or_Features.setMap(map);
+				}
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<div id="wrapper">
+			<div id="map"></div>
+			<pre id="geojson"></pre>
+		</div>
+	</body>
+</html>
