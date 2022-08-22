@@ -1,0 +1,17 @@
+table{
+font-size: 14px;
+}
+
+caption{
+    color: inherit;
+}
+
+table td:first-child{
+    background: #f1f3f4; 
+    vertical-align: top;
+}
+
+table td,
+table th{
+    min-width: 214px;
+}

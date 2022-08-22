@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="css/bootstrap.min.css" />
 	<link rel="stylesheet" href="css/style.css" type="text/css" />
 
-	<title>Proof of concept GIS</title>
+	<title>GIS - Map Drawer</title>
 </head>
 
 <body>
@@ -32,6 +32,9 @@
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="draw-map.html" target="_blank">New Map Drawer</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="docs.html" target="_blank">Docs</a>
 						</li>
 					</ul>
 				</div>
@@ -72,8 +75,8 @@
 
 			<label class="fw-bold">Image properties</label>
 
-			<h6>size</h6>
-			<input class="form-control shadow-none mb-2 col-auto" value="8" id="image-size-value" />
+			<h6>Scale factor</h6>
+			<input class="form-control shadow-none mb-2 text-center" style="width: 80px; margin-left: 12px;" value="8" id="image-size-value" />
 			<div class="row">
 				<p>
 					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="imageScaleUp()">+</button>
@@ -110,7 +113,7 @@
 				</p>
 			</div>
 
-			<h6>Delete Undo</h6>
+			<h6>Deleted Shape</h6>
 			<div class="row">
 				<p>
 					<button class="btn btn-sm bg-secondary text-white col-auto" onclick="deleteUndo()">Undo</button>

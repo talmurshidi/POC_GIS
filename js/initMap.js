@@ -25,20 +25,22 @@ const gj = {
 const constants = {
 	name: "name",
 	fill: "fill",
+	fillColor: "fillColor",
 	stroke: "stroke",
-	strokeOpacity: "stroke-opacity",
-	zIndex: "z-index",
-	fillOpacity: "fill-opacity",
-	strokeWidth: "stroke-width",
+	strokeColor: "strokeColor",
+	strokeOpacity: "strokeOpacity",
+	zIndex: "zIndex",
+	fillOpacity: "fillOpacity",
+	strokeWidth: "strokeWidth",
 	icon: "icon",
 	label: "label",
 	fontSize: "font-size",
 	text: "text",
 	color: "color",
-	fontWeight: "font-weight",
+	fontWeight: "fontWeight",
 	iconPath: "path",
 	iconScale: "scale",
-	iconLabelOrigin: "label-origin",
+	iconLabelOrigin: "labelOrigin",
 	iconSize: "size",
 	iconAnchor: "anchor",
 	hasIcon: "has-icon",
@@ -87,6 +89,7 @@ const drawingStyles = {
 		fillColor: "#555555",
 		fillOpacity: 0.2,
 		strokeColor: "#000000",
+		strokeOpacity: 1.0,
 		strokeWeight: 1,
 		clickable: true,
 		editable: true,
@@ -377,7 +380,7 @@ function drawingManagerListener() {
 }
 
 function addFeature(type, path, properties, isEditable) {
-	if (properties == null || typeof properties == undefined) {
+	if (properties == null || properties === undefined) {
 		properties = {};
 		addPropertyToJSON(type, properties);
 	}
@@ -387,30 +390,34 @@ function addFeature(type, path, properties, isEditable) {
 		case featureTypes.multiPolygon:
 		case featureTypes.polygon:
 			if (Object.keys(properties).length) {
-				var fillColor = getProperty(properties, constants.fill);
+				var fillColor = getProperty(properties, constants.fillColor);
+				if (fillColor === undefined)
+					fillColor = getProperty(properties, constants.fill);
 				var fillOpacity = getProperty(properties, constants.fillOpacity);
-				var strokeColor = getProperty(properties, constants.stroke);
+				var strokeColor = getProperty(properties, constants.strokeColor);
+				if (strokeColor === undefined)
+					strokeColor = getProperty(properties, constants.stroke);
 				var strokeWeight = getProperty(properties, constants.strokeWidth);
 				var zIndex = getProperty(properties, constants.zIndex);
 				style = {
 					fillColor:
-						typeof fillColor !== "undefined"
+						fillColor !== undefined
 							? fillColor
 							: styles.polygon.fillColor,
 					fillOpacity:
-						typeof fillOpacity !== "undefined"
+						fillOpacity !== undefined
 							? fillOpacity
 							: styles.polygon.fillOpacity,
 					strokeColor:
-						typeof strokeColor !== "undefined"
+						strokeColor !== undefined
 							? strokeColor
 							: styles.polygon.strokeColor,
 					strokeWeight:
-						typeof strokeWeight !== "undefined"
+						strokeWeight !== undefined
 							? strokeWeight
 							: styles.polygon.strokeWeight,
 					zIndex:
-						typeof zIndex !== "undefined" ? zIndex : styles.polygon.zIndex,
+						zIndex !== undefined ? zIndex : styles.polygon.zIndex,
 					clickable: true,
 					editable: false,
 				};
@@ -499,20 +506,22 @@ function addFeature(type, path, properties, isEditable) {
 		case featureTypes.lineString:
 		case featureTypes.polyline:
 			if (Object.keys(properties).length) {
-				var strokeColor = getProperty(properties, constants.stroke);
+				var strokeColor = getProperty(properties, constants.strokeColor);
+				if (strokeColor === undefined)
+					strokeColor = getProperty(properties, constants.stroke);
 				var strokeWeight = getProperty(properties, constants.strokeWidth);
 				var zIndex = getProperty(properties, constants.zIndex);
 				style = {
 					strokeColor:
-						typeof strokeColor !== "undefined"
+						strokeColor !== undefined
 							? strokeColor
 							: styles.polyline.strokeColor,
 					strokeWeight:
-						typeof strokeWeight !== "undefined"
+						strokeWeight !== undefined
 							? strokeWeight
 							: styles.polyline.strokeWeight,
 					zIndex:
-						typeof zIndex !== "undefined" ? zIndex : styles.polyline.zIndex,
+						zIndex !== undefined ? zIndex : styles.polyline.zIndex,
 					clickable: true,
 					editable: false,
 				};
@@ -606,7 +615,7 @@ function addFeature(type, path, properties, isEditable) {
 				style = {
 					icon: customIcon,
 					label: label,
-					zIndex: typeof zIndex !== "undefined" ? zIndex : styles.marker.zIndex,
+					zIndex: zIndex !== undefined ? zIndex : styles.marker.zIndex,
 					clickable: true,
 					draggable: false,
 				};
@@ -844,6 +853,8 @@ function createTableInfoWindowEditingShapeProperty(type, properties) {
 			else if (
 				k == constants.fill ||
 				k == constants.stroke ||
+				k == constants.fillColor ||
+				k == constants.strokeColor ||
 				k.toLocaleLowerCase().includes("color")
 			) {
 				valueInput = `<input class="v" type="color" value="${value}">`;
@@ -967,8 +978,8 @@ function saveChangedProperty() {
 
 			selectedShape.properties[key] = val;
 
-			if (key === constants.fill) key = "fillColor";
-			else if (key === constants.stroke) key = "strokeColor";
+			if (key === constants.fill || key === constants.fillColor) key = "fillColor";
+			else if (key === constants.stroke || key === constants.strokeColor) key = "strokeColor";
 			else if (key === constants.fillOpacity) key = "fillOpacity";
 			else if (key === constants.strokeOpacity) key = "strokeOpacity";
 			else if (key === constants.strokeWidth) key = "strokeWeight";
@@ -1082,19 +1093,19 @@ function addPropertyToJSON(type, properties) {
 	}
 
 	if (type == featureTypes.polygon || type == featureTypes.multiPolygon) {
-		if (!properties.hasOwnProperty(constants.stroke)) {
-			properties[constants.stroke] = styles.polygon.strokeColor;
+		if (!properties.hasOwnProperty(constants.stroke) || !properties.hasOwnProperty(constants.strokeColor)) {
+			properties[constants.strokeColor] = styles.polygon.strokeColor;
 		}
-		if (!properties.hasOwnProperty(constants.fill)) {
-			properties[constants.fill] = styles.polygon.fillColor;
+		if (!properties.hasOwnProperty(constants.fill) || !properties.hasOwnProperty(constants.fillColor)) {
+			properties[constants.fillColor] = styles.polygon.fillColor;
 		}
 	} else if (
 		type == featureTypes.polyline ||
 		type == featureTypes.lineString ||
 		type == featureTypes.multiLineString
 	) {
-		if (!properties.hasOwnProperty(constants.stroke)) {
-			properties[constants.stroke] = styles.polyline.strokeColor;
+		if (!properties.hasOwnProperty(constants.stroke) || !properties.hasOwnProperty(constants.strokeColor)) {
+			properties[constants.strokeColor] = styles.polyline.strokeColor;
 		}
 	} else if (type == featureTypes.marker || type == featureTypes.point) {
 		if (!properties.hasOwnProperty(constants.hasIcon)) {
@@ -1305,7 +1316,7 @@ function createGeoJSON() {
 			var properties = polygon.properties;
 			addPropertyToJSON(featureTypes.polygon, properties);
 			paths.forEach(function (path, indexPath) {
-				if (typeof path !== "undefined") {
+				if (path !== undefined) {
 					data.add({
 						properties: properties,
 						geometry: new google.maps.Data.Polygon([path.getArray()]),
@@ -1358,29 +1369,33 @@ function featureStyle(isEditable) {
 			featureType == featureTypes.polygon ||
 			featureType == featureTypes.multiPolygon
 		) {
-			var fillColor = feature.getProperty(constants.fill);
+			var fillColor = feature.getProperty(constants.fillColor);
+			if (fillColor === undefined)
+				fillColor = feature.getProperty(constants.fill);
 			var fillOpacity = feature.getProperty(constants.fillOpacity);
-			var strokeColor = feature.getProperty(constants.stroke);
+			var strokeColor = feature.getProperty(constants.strokeColor);
+			if (strokeColor === undefined)
+				strokeColor = feature.getProperty(constants.stroke);
 			var strokeWeight = feature.getProperty(constants.strokeWidth);
 			var zIndex = feature.getProperty(constants.zIndex);
 			return {
 				fillColor:
-					typeof fillColor !== "undefined"
+					fillColor !== undefined
 						? fillColor
 						: styles.polygon.fillColor,
 				fillOpacity:
-					typeof fillOpacity !== "undefined"
+					fillOpacity !== undefined
 						? fillOpacity
 						: styles.polygon.fillOpacity,
 				strokeColor:
-					typeof strokeColor !== "undefined"
+					strokeColor !== undefined
 						? strokeColor
 						: styles.polygon.strokeColor,
 				strokeWeight:
-					typeof strokeWeight !== "undefined"
+					strokeWeight !== undefined
 						? strokeWeight
 						: styles.polygon.strokeWeight,
-				zIndex: typeof zIndex !== "undefined" ? zIndex : styles.polygon.zIndex,
+				zIndex: zIndex !== undefined ? zIndex : styles.polygon.zIndex,
 				clickable: true,
 				editable: false,
 			};
@@ -1388,19 +1403,21 @@ function featureStyle(isEditable) {
 			featureType == featureTypes.polyline ||
 			featureType == featureTypes.lineString
 		) {
-			var strokeColor = feature.getProperty(constants.stroke);
+			var strokeColor = feature.getProperty(constants.strokeColor);
+			if (strokeColor === undefined)
+				strokeColor = feature.getProperty(constants.stroke);
 			var strokeWeight = feature.getProperty(constants.strokeWidth);
 			var zIndex = feature.getProperty(constants.zIndex);
 			return {
 				strokeColor:
-					typeof strokeColor !== "undefined"
+					strokeColor !== undefined
 						? strokeColor
 						: styles.polyline.strokeColor,
 				strokeWeight:
-					typeof strokeWeight !== "undefined"
+					strokeWeight !== undefined
 						? strokeWeight
 						: styles.polyline.strokeWeight,
-				zIndex: typeof zIndex !== "undefined" ? zIndex : styles.polyline.zIndex,
+				zIndex: zIndex !== undefined ? zIndex : styles.polyline.zIndex,
 				clickable: true,
 				editable: false,
 			};
@@ -1411,7 +1428,7 @@ function featureStyle(isEditable) {
 			return {
 				icon: icon,
 				label: label,
-				zIndex: !!zIndex ? zIndex : styles.marker.zIndex,
+				zIndex: zIndex !== undefined ? zIndex : styles.marker.zIndex,
 				clickable: true,
 				draggable: false,
 			};
