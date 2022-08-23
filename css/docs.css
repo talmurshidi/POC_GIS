@@ -21,3 +21,29 @@ pre{
     padding: 24px;
     border-radius: 4px;
 }
+
+.bd-toc nav {
+    font-size: .875rem;
+}
+
+.bd-toc nav ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.bd-toc nav ul ul {
+    padding-left: 1rem;
+    margin-top: 0.25rem;
+}
+
+.bd-toc nav li {
+    margin-bottom: 0.25rem;
+}
+
+.bd-toc nav a {
+    color: inherit;
+}
+
+.bd-toc nav a:not(:hover) {
+    text-decoration: none;
+}

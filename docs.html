@@ -29,415 +29,480 @@
                             <a class="nav-link" aria-current="page" href="index.html">Map Viewer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="draw-map.html" target="_blank">Map Drawer</a>
+                            <a class="nav-link" href="draw-map.html">Map Drawer</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="docs.html" target="_blank">Docs</a>
+                            <a class="nav-link active" href="docs.html">Docs</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <!--Map viewer-->
-        <div class="table-responsive">
-            <table class="table caption-top">
-                <caption class="fw-bold form-label">Map Viewer</caption>
-                <tbody>
-                    <tr>
-                        <td>
-                            Import Map
-                        </td>
-                        <td>
-                            <p>Import map with GEOJSON format.</p>
-                        </td>
-                    </tr>
+        <div class="row">
 
-                    <tr>
-                        <td>
-                            Import Charts
-                        </td>
-                        <td>
-                            <p>Import charts with JSON format.</p>
-                        </td>
-                    </tr>
+            <main class="col-10">
 
-                    <tr>
-                        <td>
-                            Hide popup close button
-                        </td>
-                        <td>
-                            <p><input style="vertical-align: middle;" type="checkbox" disabled checked> - when it is
-                                checked then the close button at the top of each popup chart will be hidden.</p>
-                            <p><input style="vertical-align: middle;" type="checkbox" disabled> - when it is
-                                unchecked then the close button
-                                at the top of each popup chart will be visible.</p>
-                        </td>
-                    </tr>
+                <!--Left side-->
+                <div class="bd-intro ps-lg-4">
 
-                </tbody>
+                    <!--Map viewer-->
+                    <section id="map-viewer">
+                        <div class="table-responsive">
+                            <table class="table caption-top">
+                                <caption class="fw-bold form-label">Map Viewer</caption>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Import Map
+                                        </td>
+                                        <td>
+                                            <p>Import map with GEOJSON format.</p>
+                                        </td>
+                                    </tr>
 
-            </table>
-        </div>
+                                    <tr>
+                                        <td>
+                                            Import Charts
+                                        </td>
+                                        <td>
+                                            <p>Import charts with JSON format.</p>
+                                        </td>
+                                    </tr>
 
-        <!--Map drawer-->
-        <div class="table-responsive">
+                                    <tr>
+                                        <td>
+                                            Hide popup close button
+                                        </td>
+                                        <td>
+                                            <p><input style="vertical-align: middle;" type="checkbox" disabled checked>
+                                                -
+                                                when it is
+                                                checked then the close button at the top of each popup chart will be
+                                                hidden.
+                                            </p>
+                                            <p><input style="vertical-align: middle;" type="checkbox" disabled> - when
+                                                it is
+                                                unchecked then the close button
+                                                at the top of each popup chart will be visible.</p>
+                                        </td>
+                                    </tr>
 
-            <!--Map Drawer-->
-            <table class="table caption-top">
-                <caption class="fw-bold form-label">Map Drawer</caption>
-                <tbody>
-                    <tr>
-                        <td>
-                            Import Map
-                        </td>
-                        <td>
-                            <p>Import map with GEOJSON format.</p>
-                        </td>
-                    </tr>
+                                </tbody>
 
-                    <tr>
-                        <td>
-                            Import Image
-                        </td>
-                        <td>
-                            <p>Import an image to be background for the map.</p>
-                        </td>
-                    </tr>
+                            </table>
+                        </div>
+                    </section>
 
-                    <tr>
-                        <td>
-                            Image properties
-                        </td>
-                        <td>
-                            <p><code>Scale factor</code> : image demission factor for scaling up and scaling down, you
-                                can change the image scale by clicking on <code class="fw-bold fs-5">+</code> or <code
-                                    class="fw-bold fs-5">-</code> buttons.</p>
-                            <p><code>Position</code> : changing the position of the image by clicking on <code
-                                    class="fw-bold fs-6">Up</code> or <code class="fw-bold fs-6">Down</code> or <code
-                                    class="fw-bold fs-6">Left</code> or <code class="fw-bold fs-6">Right</code>.</p>
-                        </td>
-                    </tr>
+                    <!--Map drawer-->
+                    <div class="table-responsive">
 
-                    <tr>
-                        <td>
-                            Map properties
-                        </td>
-                        <td>
-                            <p><code>Opacity</code> : changing map's transparency by clicking on <code
-                                    class="fw-bold fs-5">+</code> or <code class="fw-bold fs-5">-</code> buttons.</p>
-                            <p><code>Deleted Shape</code> : restoring deleted map shapes by clicking on <code
-                                    class="fw-bold fs-6">Undo</code> button.</p>
-                        </td>
-                    </tr>
+                        <!--Map Drawer-->
+                        <section id="map-drawer">
+                            <table class="table caption-top">
+                                <caption class="fw-bold form-label">Map Drawer</caption>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Import Map
+                                        </td>
+                                        <td>
+                                            <p>Import map with GEOJSON format.</p>
+                                        </td>
+                                    </tr>
 
-                    <tr>
-                        <td>
-                            Create
-                        </td>
-                        <td>
-                            <p>Creating GEOJSON format from the shapes.</p>
-                        </td>
-                    </tr>
+                                    <tr>
+                                        <td>
+                                            Import Image
+                                        </td>
+                                        <td>
+                                            <p>Import an image to be background for the map.</p>
+                                        </td>
+                                    </tr>
 
-                    <tr>
-                        <td>
-                            Export
-                        </td>
-                        <td>
-                            <p>Exporting and saving GEOJSON file into local machine.</p>
-                        </td>
-                    </tr>
+                                    <tr>
+                                        <td>
+                                            Image properties
+                                        </td>
+                                        <td>
+                                            <p><code>Scale factor</code> : image demission factor for scaling up and
+                                                scaling
+                                                down, you
+                                                can change the image scale by clicking on <code
+                                                    class="fw-bold fs-5">+</code> or
+                                                <code class="fw-bold fs-5">-</code> buttons.
+                                            </p>
+                                            <p><code>Position</code> : changing the position of the image by clicking on
+                                                <code class="fw-bold fs-6">Up</code> or <code
+                                                    class="fw-bold fs-6">Down</code> or
+                                                <code class="fw-bold fs-6">Left</code> or <code
+                                                    class="fw-bold fs-6">Right</code>.
+                                            </p>
+                                        </td>
+                                    </tr>
 
-                </tbody>
+                                    <tr>
+                                        <td>
+                                            Map properties
+                                        </td>
+                                        <td>
+                                            <p><code>Opacity</code> : changing map's transparency by clicking on <code
+                                                    class="fw-bold fs-5">+</code>
+                                                or <code class="fw-bold fs-5">-</code> buttons.</p>
+                                            <p><code>Deleted Shape</code> : restoring deleted map shapes by clicking on
+                                                <code class="fw-bold fs-6">Undo</code> button.
+                                            </p>
+                                        </td>
+                                    </tr>
 
-                <!--Drawing a polygon shape-->
-                <table class="table caption-top">
-                    <caption class="fw-bold form-label">Map Drawer - Drawing a polygon shape</caption>
-                    <tbody>
-                        <tr>
-                            <td>
-                                Name
-                            </td>
-                            <td>
-                                <p>It is highly recommended adding a <b>name</b> for the shape, the <b>name</b> will be
-                                    used if there is a chart related to the shape (e.g: <b>country name</b>).</p>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            Create
+                                        </td>
+                                        <td>
+                                            <p>Creating GEOJSON format from the shapes.</p>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                fillColor
-                            </td>
-                            <td>
-                                <p>The shape fill color. The color value is hexadecimal (e.g: <b>#000000</b>).</p>
-                                <div>
-                                    <b>Type:</b> string
-                                </div>
-                                <div>
-                                    <b>Default:</b> '#555555'
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            Export
+                                        </td>
+                                        <td>
+                                            <p>Exporting and saving GEOJSON file into local machine.</p>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                fillOpacity
-                            </td>
-                            <td>
-                                <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code> and <code
-                                        class="fw-bold fs-6">1.0</code> to determine the opacity of the fill's color.
-                                </p>
-                                <div>
-                                    <b>Type:</b> numerical
-                                </div>
-                                <div>
-                                    <b>Default:</b> 0.2
-                                </div>
-                            </td>
-                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
 
-                        <tr>
-                            <td>
-                                strokeColor
-                            </td>
-                            <td>
-                                <p>The shape border color. The color value is hexadecimal (e.g: <b>#000000</b>).</p>
-                                <div>
-                                    <b>Type:</b> string
-                                </div>
-                                <div>
-                                    <b>Default:</b> '#000000'
-                                </div>
-                            </td>
-                        </tr>
 
-                        <tr>
-                            <td>
-                                strokeOpacity
-                            </td>
-                            <td>
-                                <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code> and <code
-                                        class="fw-bold fs-6">1.0</code> to
-                                    determine the opacity of the stroke's color.</p>
-                                <div>
-                                    <b>Type:</b> numerical
-                                </div>
-                                <div>
-                                    <b>Default:</b> 1.0
-                                </div>
-                            </td>
-                        </tr>
+                        <!--Drawing a polygon shape-->
+                        <section id="map-drawer-polygon">
+                            <table class="table caption-top">
+                                <caption class="fw-bold form-label">Map Drawer - Drawing a polygon shape</caption>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Name
+                                        </td>
+                                        <td>
+                                            <p>It is highly recommended adding a <b>name</b> for the shape, the
+                                                <b>name</b>
+                                                will
+                                                be
+                                                used if there is a chart related to the shape (e.g: <b>country
+                                                    name</b>).
+                                            </p>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                strokeWeight
-                            </td>
-                            <td>
-                                <p>Specifies the width of the shape in pixels.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 1
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            fillColor
+                                        </td>
+                                        <td>
+                                            <p>The shape fill color. The color value is hexadecimal (e.g:
+                                                <b>#000000</b>).
+                                            </p>
+                                            <div>
+                                                <b>Type:</b> string
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> '#555555'
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                zIndex
-                            </td>
-                            <td>
-                                <p>The zIndex compared to other shapes.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 1
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            fillOpacity
+                                        </td>
+                                        <td>
+                                            <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code>
+                                                and
+                                                <code class="fw-bold fs-6">1.0</code> to determine the opacity of the
+                                                fill's
+                                                color.
+                                            </p>
+                                            <div>
+                                                <b>Type:</b> numerical
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 0.2
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                    </tbody>
+                                    <tr>
+                                        <td>
+                                            strokeColor
+                                        </td>
+                                        <td>
+                                            <p>The shape border color. The color value is hexadecimal (e.g:
+                                                <b>#000000</b>).
+                                            </p>
+                                            <div>
+                                                <b>Type:</b> string
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> '#000000'
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                </table>
+                                    <tr>
+                                        <td>
+                                            strokeOpacity
+                                        </td>
+                                        <td>
+                                            <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code>
+                                                and
+                                                <code class="fw-bold fs-6">1.0</code> to
+                                                determine the opacity of the stroke's color.
+                                            </p>
+                                            <div>
+                                                <b>Type:</b> numerical
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 1.0
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                <!--Drawing a line shape-->
-                <table class="table caption-top">
-                    <caption class="fw-bold form-label">Map Drawer - Drawing a line</caption>
-                    <tbody>
-                        <tr>
-                            <td>
-                                Name
-                            </td>
-                            <td>
-                                <p>It is highly recommended adding a <b>name</b> for the line, the <b>name</b> will be
-                                    used if there is a chart related to the line (e.g: <b>river name</b>).</p>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            strokeWeight
+                                        </td>
+                                        <td>
+                                            <p>Specifies the width of the shape in pixels.</p>
+                                            <div>
+                                                <b>Type:</b> number
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 1
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                strokeColor
-                            </td>
-                            <td>
-                                <p>The line color. The color value is hexadecimal (e.g: <b>#000000</b>).</p>
-                                <div>
-                                    <b>Type:</b> string
-                                </div>
-                                <div>
-                                    <b>Default:</b> '#555555'
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            zIndex
+                                        </td>
+                                        <td>
+                                            <p>The zIndex compared to other shapes.</p>
+                                            <div>
+                                                <b>Type:</b> number
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 1
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                strokeOpacity
-                            </td>
-                            <td>
-                                <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code> and <code
-                                        class="fw-bold fs-6">1.0</code> to
-                                    determine the opacity of the line's color.</p>
-                                <div>
-                                    <b>Type:</b> numerical
-                                </div>
-                                <div>
-                                    <b>Default:</b> 1.0
-                                </div>
-                            </td>
-                        </tr>
+                                </tbody>
 
-                        <tr>
-                            <td>
-                                strokeWeight
-                            </td>
-                            <td>
-                                <p>Specifies the width of the line in pixels.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 2
-                                </div>
-                            </td>
-                        </tr>
+                            </table>
+                        </section>
 
-                        <tr>
-                            <td>
-                                zIndex
-                            </td>
-                            <td>
-                                <p>The zIndex compared to other shapes.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 2
-                                </div>
-                            </td>
-                        </tr>
+                        <!--Drawing a line shape-->
+                        <section id="map-drawer-line">
+                            <table class="table caption-top">
+                                <caption class="fw-bold form-label">Map Drawer - Drawing a line</caption>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Name
+                                        </td>
+                                        <td>
+                                            <p>It is highly recommended adding a <b>name</b> for the line, the
+                                                <b>name</b>
+                                                will
+                                                be
+                                                used if there is a chart related to the line (e.g: <b>river name</b>).
+                                            </p>
+                                        </td>
+                                    </tr>
 
-                    </tbody>
+                                    <tr>
+                                        <td>
+                                            strokeColor
+                                        </td>
+                                        <td>
+                                            <p>The line color. The color value is hexadecimal (e.g: <b>#000000</b>).</p>
+                                            <div>
+                                                <b>Type:</b> string
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> '#555555'
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                </table>
+                                    <tr>
+                                        <td>
+                                            strokeOpacity
+                                        </td>
+                                        <td>
+                                            <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code>
+                                                and
+                                                <code class="fw-bold fs-6">1.0</code> to
+                                                determine the opacity of the line's color.
+                                            </p>
+                                            <div>
+                                                <b>Type:</b> numerical
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 1.0
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                <!--Drawing a marker-->
-                <table class="table caption-top">
-                    <caption class="fw-bold form-label">Map Drawer - Drawing a marker</caption>
-                    <tbody>
-                        <tr>
-                            <td>
-                                Name
-                            </td>
-                            <td>
-                                <p>It is highly recommended adding a <b>name</b> for the marker, the <b>name</b> will be
-                                    used if there is a chart related to the line (e.g: <b>place name</b>).</p>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            strokeWeight
+                                        </td>
+                                        <td>
+                                            <p>Specifies the width of the line in pixels.</p>
+                                            <div>
+                                                <b>Type:</b> number
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 2
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                label
-                            </td>
-                            <td>
-                                <p>Specifies the displayed text on the map and it has json format.</p>
-                                <ul>
-                                    <li>
-                                        <code>"text":</code> represents the displayed text.
-                                    </li>
-                                    <li>
-                                        <code>"color":</code> the text color in hexadecimal (e.g: <b>#C70E20</b>).
-                                    </li>
-                                    <li>
-                                        <code>"fontWeight":</code> how thick or thin characters in text should be
-                                        displayed (e.g: <b>regular</b> or <b>bold</b>).
-                                    </li>
-                                    <li>
-                                        <code>"fontSize":</code> text size in pixel (e.g: <b>11px</b>).
-                                    </li>
-                                </ul>
-                                <pre>
+                                    <tr>
+                                        <td>
+                                            zIndex
+                                        </td>
+                                        <td>
+                                            <p>The zIndex compared to other shapes.</p>
+                                            <div>
+                                                <b>Type:</b> number
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 2
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                        </section>
+
+                        <!--Drawing a marker-->
+                        <section id="map-drawer-marker">
+                            <table class="table caption-top">
+                                <caption class="fw-bold form-label">Map Drawer - Drawing a marker</caption>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Name
+                                        </td>
+                                        <td>
+                                            <p>It is highly recommended adding a <b>name</b> for the marker, the
+                                                <b>name</b>
+                                                will be
+                                                used if there is a chart related to the line (e.g: <b>place name</b>).
+                                            </p>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            label
+                                        </td>
+                                        <td>
+                                            <p>Specifies the displayed text on the map and it has json format.</p>
+                                            <ul>
+                                                <li>
+                                                    <code>"text":</code> represents the displayed text.
+                                                </li>
+                                                <li>
+                                                    <code>"color":</code> the text color in hexadecimal (e.g:
+                                                    <b>#C70E20</b>).
+                                                </li>
+                                                <li>
+                                                    <code>"fontWeight":</code> how thick or thin characters in text
+                                                    should
+                                                    be
+                                                    displayed (e.g: <b>regular</b> or <b>bold</b>).
+                                                </li>
+                                                <li>
+                                                    <code>"fontSize":</code> text size in pixel (e.g: <b>11px</b>).
+                                                </li>
+                                            </ul>
+                                            <pre>
 {
     "text": "Sample Text",
     "color": "#C70E20",
     "fontWeight": "regular",
     "fontSize": "11px"
 }
-                                 </pre>
-                                <div>
-                                    <b>Type:</b> json
-                                </div>
-                                <div>
-                                    <b>Default:</b> null
-                                </div>
-                            </td>
-                        </tr>
+                                                                                             </pre>
+                                            <div>
+                                                <b>Type:</b> json
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> null
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                icon
-                            </td>
-                            <td>
-                                <p>Specifies the marker icon.</p>
-                                <ul>
-                                    <li>
-                                        <code>"path":</code> represents the icon shape (e.g: circle <code
-                                            class="fs-4">.</code> in the below example).
-                                    </li>
-                                    <li>
-                                        <code>"scale":</code> how big or small the icon is (e.g: small shape
-                                        <code class="fw-bold fs-7">1</code> in the below example).
-                                    </li>
-                                    <li>
-                                        <code>"fillColor":</code> the fill icon color in hexadecimal(e.g:
-                                        <b>#ff0000</b> in the below
-                                        example).
-                                    </li>
-                                    <li>
-                                        <code>"fillOpacity":</code> specifies a numerical value between <code
-                                            class="fw-bold fs-7">0.0</code> and <code class="fw-bold fs-7">1.0</code>
-                                        to determine the opacity of the fill's color.
-                                    </li>
-                                    <li>
-                                        <code>"strokeColor":</code> the icon border color. The color value is
-                                        hexadecimal (e.g: <b>#008000</b> or <b>transparent</b>).
-                                    </li>
-                                    <li>
-                                        <code>"strokeWeight":</code> specifies the width of the icon border.
-                                    </li>
-                                    <li>
-                                        <code>"strokeOpacity":</code> specifies a numerical value between <code
-                                            class="fw-bold fs-7">0.0</code> and <code class="fw-bold fs-7">1.0</code> to
-                                        determine the opacity of the stroke's color.
-                                    </li>
-                                    <li>
-                                        <code>"labelOrigin"</code> the position of the icon relative to the label by
-                                        changing the value of <code class="fw-bold fs-6">x</code> and <code class="fw-bold fs-6">y</code>.
-                                    </li>
-                                </ul>
-                                <pre>
+                                    <tr>
+                                        <td>
+                                            icon
+                                        </td>
+                                        <td>
+                                            <p>Specifies the marker icon.</p>
+                                            <ul>
+                                                <li>
+                                                    <code>"path":</code> represents the icon shape (e.g: circle <code
+                                                        class="fs-4">.</code>
+                                                    in the below example).
+                                                </li>
+                                                <li>
+                                                    <code>"scale":</code> how big or small the icon is (e.g: small shape
+                                                    <code class="fw-bold fs-7">1</code> in the below example).
+                                                </li>
+                                                <li>
+                                                    <code>"fillColor":</code> the fill icon color in hexadecimal(e.g:
+                                                    <b>#ff0000</b> in the below
+                                                    example).
+                                                </li>
+                                                <li>
+                                                    <code>"fillOpacity":</code> specifies a numerical value between
+                                                    <code class="fw-bold fs-7">0.0</code> and <code
+                                                        class="fw-bold fs-7">1.0</code>
+                                                    to determine the opacity of the fill's color.
+                                                </li>
+                                                <li>
+                                                    <code>"strokeColor":</code> the icon border color. The color value
+                                                    is
+                                                    hexadecimal (e.g: <b>#008000</b> or <b>transparent</b>).
+                                                </li>
+                                                <li>
+                                                    <code>"strokeWeight":</code> specifies the width of the icon border.
+                                                </li>
+                                                <li>
+                                                    <code>"strokeOpacity":</code> specifies a numerical value between
+                                                    <code class="fw-bold fs-7">0.0</code> and <code
+                                                        class="fw-bold fs-7">1.0</code>
+                                                    to
+                                                    determine the opacity of the stroke's color.
+                                                </li>
+                                                <li>
+                                                    <code>"labelOrigin"</code> the position of the icon relative to the
+                                                    label by
+                                                    changing the value of <code class="fw-bold fs-6">x</code> and <code
+                                                        class="fw-bold fs-6">y</code>.
+                                                </li>
+                                            </ul>
+                                            <pre>
 {
     "path": "M 1.8375 0 C 4.41 0 4.41 3.675 1.8375 3.675 C -0.735 3.675 -0.735 0 1.8375 0",
     "scale": 1,
@@ -451,36 +516,60 @@
         "y": 2
     }
 }
-                                </pre>
-                                <div>
-                                    <b>Type:</b> json
-                                </div>
-                                <div>
-                                    <b>Default:</b> <a
-                                        href="https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red.png"
-                                        target="_blank">marker red</a>
-                                </div>
-                            </td>
-                        </tr>
+                                                                                            </pre>
+                                            <div>
+                                                <b>Type:</b> json
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> <a
+                                                    href="https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red.png"
+                                                    target="_blank">marker red</a>
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                        <tr>
-                            <td>
-                                zIndex
-                            </td>
-                            <td>
-                                <p>The zIndex compared to other shapes.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 3
-                                </div>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td>
+                                            zIndex
+                                        </td>
+                                        <td>
+                                            <p>The zIndex compared to other shapes.</p>
+                                            <div>
+                                                <b>Type:</b> number
+                                            </div>
+                                            <div>
+                                                <b>Default:</b> 3
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                    </tbody>
+                                </tbody>
 
-                </table>
+                            </table>
+                        </section>
+                    </div>
+                </div>
+            </main>
+
+            <div class="col-2 d-none d-lg-block">
+                <div class="sticky-top pt-2">
+                    <div class="bd-toc mt-4 mb-5 my-md-0 ps-xl-3 mb-lg-5 text-muted">
+                        <strong class="d-block h6 my-2 pb-2 border-bottom">On this page</strong>
+                        <nav>
+                            <ul>
+                                <li><a href="#map-viewer">Map Viewer</a></li>
+                                <li><a href="#map-drawer">Map Drawer</a>
+                                    <ul>
+                                        <li><a href="#map-drawer-polygon">Polygon</a></li>
+                                        <li><a href="#map-drawer-line">Line</a></li>
+                                        <li><a href="#map-drawer-marker">Marker</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
