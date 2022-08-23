@@ -34,7 +34,7 @@ const constants = {
 	strokeWidth: "strokeWidth",
 	icon: "icon",
 	label: "label",
-	fontSize: "font-size",
+	fontSize: "fontSize",
 	text: "text",
 	color: "color",
 	fontWeight: "fontWeight",
@@ -82,6 +82,18 @@ const styles = {
 		// 	fontWeight: "bold",
 		// },
 	},
+	hiddenMarker: {
+		// "path" : google.maps.SymbolPath.CIRCLE,
+		"path": "M -2,-2 2,-2 2,2 -2,2 z", // Square
+		// "path" : "M 4.375 0 C 10.5 0 10.5 8.75 4.375 8.75 C -1.75 8.75 -1.75 0 4.375 0", // Circle
+		"scale": 4,
+		"fillColor": "transparent",
+		"fillOpacity": 0,
+		"strokeWeight": 0,
+		"strokeOpacity": 0,
+		// "labelOrigin": new google.maps.Point(0, 0);
+		"labelOrigin": { x: 0, y: 0 }
+	}
 };
 // set default drawing manager styles
 const drawingStyles = {
@@ -596,29 +608,25 @@ function addFeature(type, path, properties, isEditable) {
 				var icon = getProperty(properties, constants.icon);
 				var label = getProperty(properties, constants.label);
 				var zIndex = getProperty(properties, constants.zIndex);
-				var hasIcon = getProperty(properties, constants.hasIcon);
-				var customIcon = {};
-				if (hasIcon) {
-					customIcon = icon;
-				} else {
-					// customIcon["path"] = google.maps.SymbolPath.CIRCLE;
-					customIcon["path"] = "M -2,-2 2,-2 2,2 -2,2 z"; // Square
-					// customIcon["path"] = "M 4.375 0 C 10.5 0 10.5 8.75 4.375 8.75 C -1.75 8.75 -1.75 0 4.375 0"; // Circle
-					customIcon["scale"] = 4;
-					customIcon["fillColor"] = "transparent";
-					customIcon["fillOpacity"] = 0;
-					customIcon["strokeWeight"] = 0;
-					customIcon["strokeOpacity"] = 0;
-					// customIcon["labelOrigin"] = new google.maps.Point(0, 0);
-					customIcon["labelOrigin"] = { x: 0, y: 0 };
-				}
+
 				style = {
-					icon: customIcon,
-					label: label,
+					// icon: customIcon,
+					// label: label,
 					zIndex: zIndex !== undefined ? zIndex : styles.marker.zIndex,
 					clickable: true,
 					draggable: false,
 				};
+
+				if (icon !== undefined && icon !== "")
+					style.icon = icon;
+
+				if (label !== undefined && label !== "") {
+					style.label = label;
+					if (icon === undefined || icon === "") {
+						style.icon = styles.hiddenMarker;
+					}
+				}
+
 			} else {
 				style = styles.marker;
 			}
@@ -836,20 +844,25 @@ function openInfoWindowEditingShapeProperty(feature, content, event) {
 }
 
 function createTableInfoWindowEditingShapeProperty(type, properties) {
-	let tableString = `<div>${type}</div><div><table id="property-content">`;
-	let isHasIcon = false;
-	let isAddIcon = false;
-	let isChecked = false;
+	let tableString = `<div>${type}</div><div><table class="table table-sm table-striped" id="property-content-table">`;
+	// let isHasIcon = false;
+	// let isAddIcon = false;
+	// let isChecked = false;
 	for (let k in properties) {
 		let value = properties[k];
 		if (typeof value !== "function") {
 			let valueInput = "";
-			if (
+
+			if (k == constants.name) {
+				valueInput = `<input class="v" type="text" value="${value}">`;
+			}
+			else if (
 				k == constants.fillOpacity ||
 				k == constants.strokeOpacity ||
 				k.toLocaleLowerCase().includes("opacity")
-			)
+			) {
 				valueInput = `<input class="v" type="number" min="0" max="1" step="0.0" value="${value}">`;
+			}
 			else if (
 				k == constants.fill ||
 				k == constants.stroke ||
@@ -858,54 +871,63 @@ function createTableInfoWindowEditingShapeProperty(type, properties) {
 				k.toLocaleLowerCase().includes("color")
 			) {
 				valueInput = `<input class="v" type="color" value="${value}">`;
-			} else if (k == constants.label) {
+			}
+			else if (k == constants.label || k == constants.icon) {
 				if (value instanceof Object) {
 					var objString = JSON.stringify(value, null, 2);
-					valueInput = `<textarea class="v" rows="8">${objString}</textarea>`;
-				} else valueInput = `<textarea class="v" rows="8">${value}</textarea>`;
-			} else if (k == constants.icon) {
-				isAddIcon = true;
-				// if (properties.hasOwnProperty(constants.hasIcon)) {
-				// 	var hasIconValue = getBoolean(properties[constants.hasIcon]);
-				// 	if (hasIconValue == true) {
-				if (value instanceof Object) {
-					var objString = JSON.stringify(value, null, 2);
-					valueInput = iconCellTemplate(objString);
-				} else valueInput = iconCellTemplate(value);
-				// 	}
-				// }
-			} else if (k == constants.zIndex || k == constants.strokeWidth) {
-				valueInput = `<input class="v" type="number" value="${value}">`;
-			} else if (k == constants.hasIcon) {
-				isHasIcon = true;
-				var checkboxValue = getBoolean(value);
-				isChecked = checkboxValue;
-				var checked = checkboxValue == true ? "checked" : "";
-				valueInput = `<input id="has-icon" onchange="markerHasIcon()" class="v" type="checkbox" value="${checkboxValue}" ${checked}>`;
-			} else valueInput = `<input class="v" type="text" value="${value}">`;
+					valueInput = `<textarea class="v" rows="6">${objString}</textarea>`;
+				} else {
+					valueInput = `<textarea class="v" rows="6">${value}</textarea>`;
+				}
+			}
+			// else if (k == constants.icon) {
+			// 	isAddIcon = true;
+			// 	// if (properties.hasOwnProperty(constants.hasIcon)) {
+			// 	// 	var hasIconValue = getBoolean(properties[constants.hasIcon]);
+			// 	// 	if (hasIconValue == true) {
+			// 	if (value instanceof Object) {
+			// 		var objString = JSON.stringify(value, null, 2);
+			// 		valueInput = iconCellTemplate(objString);
+			// 	} else valueInput = iconCellTemplate(value);
+			// 	// 	}
+			// 	// }
+			// } 
+			else if (k == constants.zIndex || k == constants.strokeWidth) {
+				valueInput = `<input class="v" min="0" type="number" value="${value}">`;
+			}
+			// else if (k == constants.hasIcon) {
+			// 	isHasIcon = true;
+			// 	var checkboxValue = getBoolean(value);
+			// 	isChecked = checkboxValue;
+			// 	var checked = checkboxValue == true ? "checked" : "";
+			// 	valueInput = `<input id="has-icon" onchange="markerHasIcon()" class="v" type="checkbox" value="${checkboxValue}" ${checked}>`;
+			// }
+			else {
+				valueInput = `<textarea class="v" row="1">${value}</textarea>`;
+			}
 
 			tableString += `<tr>
-			<th><input class="k" type="text" value="${k}"></th>
-			<th>${valueInput}</th>
+			<td>${keyCellTemplate(k)}</td>
+			<td>${valueInput}</td>
 			</tr>`;
 		}
 	}
 
-	if (isAddIcon == false && isHasIcon == true && isChecked == true) {
-		tableString += `<tr>
-		<td>${keyCellTemplate("icon")}</td>
-		<td>${iconCellTemplate("")}</td>
-		</tr>`;
-	}
+	// if (isAddIcon == false && isHasIcon == true && isChecked == true) {
+	// 	tableString += `<tr>
+	// 	<td>${keyCellTemplate("icon")}</td>
+	// 	<td>${iconCellTemplate("")}</td>
+	// 	</tr>`;
+	// }
 
 	tableString += `</table>
 	<div style="cursor: pointer; color:blue;" onclick="addRow()">
     Add row
 	</div>
-	<button id="save-btn" onclick="saveChangedProperty()">Save</button>
-	<button id="edit-btn" onclick="setEditableShape()">Select Shape</button>
-	<button id="delete-btn" style="color:red;" onclick="deleteFeature()">DELETE</button>
-	<button id="cancel-btn" onclick="closeInfoWindowEditingShapeProperty()">Cancel</button>
+		<button id="save-btn" onclick="saveChangedProperty()">Save</button>
+		<button id="edit-btn" onclick="setEditableShape()">Select Shape</button>
+		<button id="delete-btn" style="color:red;" onclick="deleteFeature()">DELETE</button>
+		<button id="cancel-btn" onclick="closeInfoWindowEditingShapeProperty()">Cancel</button>
 	</div>`;
 
 	return tableString;
@@ -921,7 +943,7 @@ function iconCellTemplate(value) {
 
 function markerHasIcon() {
 	var checkBoxHasIcon = document.getElementById("has-icon");
-	var table = document.getElementById("property-content");
+	var table = document.getElementById("property-content-table");
 	// checkBoxHasIcon.value = !checkBoxHasIcon.value;
 	if (checkBoxHasIcon.checked) {
 		addIconRow();
@@ -935,7 +957,7 @@ function markerHasIcon() {
 }
 
 function saveChangedProperty() {
-	var table = document.getElementById("property-content");
+	var table = document.getElementById("property-content-table");
 	var rows = table.rows;
 	var styleOptions = {};
 
@@ -960,17 +982,22 @@ function saveChangedProperty() {
 			if (valType === "textarea") {
 				try {
 					if (val) {
-						if (val.includes("{") && val.includes("}")) val = JSON.parse(val);
+						if (val.includes("{") && val.includes("}"))
+							val = JSON.parse(val);
 					}
 				} catch (error) {
 					console.error(error);
 				}
-			} else if (valType === "number") val = parseFloat(val);
-			else if (valType === "checkbox") {
-				val = getBoolean(val);
-			} else if (val) {
+			} else if (valType === "number") {
+				val = parseFloat(val);
+			}
+			// else if (valType === "checkbox") {
+			// 	val = getBoolean(val);
+			// }
+			else if (val) {
 				try {
-					if (val.includes("{") && val.includes("}")) val = JSON.parse(val);
+					if (val.includes("{") && val.includes("}"))
+						val = JSON.parse(val);
 				} catch (error) {
 					console.error(error);
 				}
@@ -990,29 +1017,30 @@ function saveChangedProperty() {
 		}
 	}
 
-	var hasIcon = document.getElementById("has-icon");
-	if (hasIcon) {
-		if (hasIcon.checked == false) {
-			selectedShape.properties[constants.hasIcon] = false;
-			styleOptions[constants.hasIcon] = false;
-			if (selectedShape.properties.hasOwnProperty(constants.icon)) {
-				delete selectedShape.properties.icon;
-				delete styleOptions.icon;
-			} else {
-				styleOptions[constants.icon] = {
-					path: "M -2,-2 2,-2 2,2 -2,2 z",
-					scale: 4,
-					fillColor: "transparent",
-					strokeWeight: 0,
-					strokeOpacity: 0,
-					labelOrigin: { x: 0, y: 0 },
-				};
-			}
-		} else {
-			selectedShape.properties[constants.hasIcon] = true;
-			styleOptions[constants.hasIcon] = true;
-		}
-	}
+	// var hasIcon = document.getElementById("has-icon");
+	// if (hasIcon) {
+	// 	if (hasIcon.checked == false) {
+	// 		selectedShape.properties[constants.hasIcon] = false;
+	// 		styleOptions[constants.hasIcon] = false;
+	// 		if (selectedShape.properties.hasOwnProperty(constants.icon)) {
+	// 			delete selectedShape.properties.icon;
+	// 			delete styleOptions.icon;
+	// 		} else {
+	// 			styleOptions[constants.icon] = {
+	// 				path: "M -2,-2 2,-2 2,2 -2,2 z",
+	// 				scale: 4,
+	// 				fillColor: "transparent",
+	// 				strokeWeight: 0,
+	// 				strokeOpacity: 0,
+	// 				labelOrigin: { x: 0, y: 0 },
+	// 			};
+	// 		}
+	// 	} else {
+	// 		selectedShape.properties[constants.hasIcon] = true;
+	// 		styleOptions[constants.hasIcon] = true;
+	// 	}
+	// }
+
 	styleOptions = JSON.parse(JSON.stringify(styleOptions));
 	selectedShape.shape.setOptions(styleOptions);
 }
@@ -1039,7 +1067,7 @@ function addIconRow() {
 			var cell1 = newRow.insertCell(0);
 			var cell2 = newRow.insertCell(1);
 			cell1.innerHTML = `<input class="k" id="marker-icon" type="text" value="icon">`;
-			cell2.innerHTML = `<textarea rows="8" class="v" value="">`;
+			cell2.innerHTML = `<textarea rows="8" class="v"></textarea>`;
 			hasIconInput.parentNode.parentNode.parentNode.insertBefore(
 				newRow,
 				hasIconInput.nextSibling
@@ -1050,12 +1078,12 @@ function addIconRow() {
 }
 
 function addRow() {
-	var table = document.getElementById("property-content");
+	var table = document.getElementById("property-content-table");
 	var row = table.insertRow(-1);
 	var cell1 = row.insertCell(0);
 	var cell2 = row.insertCell(1);
 	cell1.innerHTML = `<input class="k" type="text" value="">`;
-	cell2.innerHTML = `<input class="v" type="text" value="">`;
+	cell2.innerHTML = `<textarea row="1" class="v"></textarea>`;
 }
 
 function closeInfoWindowEditingShapeProperty() {
@@ -1110,14 +1138,15 @@ function addPropertyToJSON(type, properties) {
 			if (!properties.hasOwnProperty(constants.stroke))
 				properties[constants.strokeColor] = styles.polyline.strokeColor;
 		}
-	} else if (type == featureTypes.marker || type == featureTypes.point) {
-		if (!properties.hasOwnProperty(constants.hasIcon)) {
-			properties[constants.hasIcon] = true;
-		}
-		// if (!properties.hasOwnProperty(constants.label)) {
-		// 	properties[constants.label] = customMarker.label;
-		// }
 	}
+	// else if (type == featureTypes.marker || type == featureTypes.point) {
+	// 	// if (!properties.hasOwnProperty(constants.hasIcon)) {
+	// 	// 	properties[constants.hasIcon] = true;
+	// 	// }
+	// 	// if (!properties.hasOwnProperty(constants.label)) {
+	// 	// 	properties[constants.label] = customMarker.label;
+	// 	// }
+	// }
 }
 
 function getProperty(properties, propertyName) {

@@ -1,3 +1,12 @@
+/* Optional: Makes the sample page fill the window. */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .map-container {
   height: 100%;
   width: 90%;
@@ -30,15 +39,6 @@
   height: 100%;
   width: 100%;
   position: relative !important;
-}
-
-/* Optional: Makes the sample page fill the window. */
-html,
-body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 #legend {
@@ -104,27 +104,24 @@ body {
   font-size: 8px !important;
 }
 
-.clear {
-  clear: both;
-}
-
-table {
+/* table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
-}
+  font-size: 14px;
+} */
 
-td,
+/* td,
 th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
-}
+} */
 
-td {
-  font-size: 12px;
-}
-
-tr:nth-child(even) {
+/* tr:nth-child(even) {
   background-color: #dddddd;
+} */
+
+#property-content-table td {
+  padding: 10px;
 }
