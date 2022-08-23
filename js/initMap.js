@@ -1093,19 +1093,22 @@ function addPropertyToJSON(type, properties) {
 	}
 
 	if (type == featureTypes.polygon || type == featureTypes.multiPolygon) {
-		if (!properties.hasOwnProperty(constants.stroke) || !properties.hasOwnProperty(constants.strokeColor)) {
-			properties[constants.strokeColor] = styles.polygon.strokeColor;
+		if (!properties.hasOwnProperty(constants.strokeColor)) {
+			if (!properties.hasOwnProperty(constants.stroke))
+				properties[constants.strokeColor] = styles.polygon.strokeColor;
 		}
-		if (!properties.hasOwnProperty(constants.fill) || !properties.hasOwnProperty(constants.fillColor)) {
-			properties[constants.fillColor] = styles.polygon.fillColor;
+		if (!properties.hasOwnProperty(constants.fillColor)) {
+			if (!properties.hasOwnProperty(constants.fill))
+				properties[constants.fillColor] = styles.polygon.fillColor;
 		}
 	} else if (
 		type == featureTypes.polyline ||
 		type == featureTypes.lineString ||
 		type == featureTypes.multiLineString
 	) {
-		if (!properties.hasOwnProperty(constants.stroke) || !properties.hasOwnProperty(constants.strokeColor)) {
-			properties[constants.strokeColor] = styles.polyline.strokeColor;
+		if (!properties.hasOwnProperty(constants.strokeColor)) {
+			if (!properties.hasOwnProperty(constants.stroke))
+				properties[constants.strokeColor] = styles.polyline.strokeColor;
 		}
 	} else if (type == featureTypes.marker || type == featureTypes.point) {
 		if (!properties.hasOwnProperty(constants.hasIcon)) {
