@@ -15,3 +15,9 @@ table td,
 table th{
     min-width: 214px;
 }
+
+pre{
+    background: #f1f3f4;
+    padding: 24px;
+    border-radius: 4px;
+}

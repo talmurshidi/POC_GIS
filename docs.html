@@ -359,47 +359,106 @@
 
                         <tr>
                             <td>
-                                strokeColor
+                                label
                             </td>
                             <td>
-                                <p>The line color. The color value is hexadecimal (e.g: <b>#000000</b>).</p>
+                                <p>Specifies the displayed text on the map and it has json format.</p>
+                                <ul>
+                                    <li>
+                                        <code>"text":</code> represents the displayed text.
+                                    </li>
+                                    <li>
+                                        <code>"color":</code> the text color in hexadecimal (e.g: <b>#C70E20</b>).
+                                    </li>
+                                    <li>
+                                        <code>"fontWeight":</code> how thick or thin characters in text should be
+                                        displayed (e.g: <b>regular</b> or <b>bold</b>).
+                                    </li>
+                                    <li>
+                                        <code>"fontSize":</code> text size in pixel (e.g: <b>11px</b>).
+                                    </li>
+                                </ul>
+                                <pre>
+{
+    "text": "Sample Text",
+    "color": "#C70E20",
+    "fontWeight": "regular",
+    "fontSize": "11px"
+}
+                                 </pre>
                                 <div>
-                                    <b>Type:</b> string
+                                    <b>Type:</b> json
                                 </div>
                                 <div>
-                                    <b>Default:</b> '#555555'
+                                    <b>Default:</b> null
                                 </div>
                             </td>
                         </tr>
 
                         <tr>
                             <td>
-                                strokeOpacity
+                                icon
                             </td>
                             <td>
-                                <p>Specifies a numerical value between <code class="fw-bold fs-6">0.0</code> and <code
-                                        class="fw-bold fs-6">1.0</code> to
-                                    determine the opacity of the line's color.</p>
+                                <p>Specifies the marker icon.</p>
+                                <ul>
+                                    <li>
+                                        <code>"path":</code> represents the icon shape (e.g: circle <code
+                                            class="fs-4">.</code> in the below example).
+                                    </li>
+                                    <li>
+                                        <code>"scale":</code> how big or small the icon is (e.g: small shape
+                                        <code class="fw-bold fs-7">1</code> in the below example).
+                                    </li>
+                                    <li>
+                                        <code>"fillColor":</code> the fill icon color in hexadecimal(e.g:
+                                        <b>#ff0000</b> in the below
+                                        example).
+                                    </li>
+                                    <li>
+                                        <code>"fillOpacity":</code> specifies a numerical value between <code
+                                            class="fw-bold fs-7">0.0</code> and <code class="fw-bold fs-7">1.0</code>
+                                        to determine the opacity of the fill's color.
+                                    </li>
+                                    <li>
+                                        <code>"strokeColor":</code> the icon border color. The color value is
+                                        hexadecimal (e.g: <b>#008000</b> or <b>transparent</b>).
+                                    </li>
+                                    <li>
+                                        <code>"strokeWeight":</code> specifies the width of the icon border.
+                                    </li>
+                                    <li>
+                                        <code>"strokeOpacity":</code> specifies a numerical value between <code
+                                            class="fw-bold fs-7">0.0</code> and <code class="fw-bold fs-7">1.0</code> to
+                                        determine the opacity of the stroke's color.
+                                    </li>
+                                    <li>
+                                        <code>"labelOrigin"</code> the position of the icon relative to the label by
+                                        changing the value of <code class="fw-bold fs-6">x</code> and <code class="fw-bold fs-6">y</code>.
+                                    </li>
+                                </ul>
+                                <pre>
+{
+    "path": "M 1.8375 0 C 4.41 0 4.41 3.675 1.8375 3.675 C -0.735 3.675 -0.735 0 1.8375 0",
+    "scale": 1,
+    "fillColor": "#ff0000",
+    "fillOpacity": 1,
+    "strokeColor": "transparent",
+    "strokeWeight": 0,
+    "strokeOpacity": 0,
+    "labelOrigin": {
+        "x": 22,
+        "y": 2
+    }
+}
+                                </pre>
                                 <div>
-                                    <b>Type:</b> numerical
+                                    <b>Type:</b> json
                                 </div>
                                 <div>
-                                    <b>Default:</b> 1.0
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                strokeWeight
-                            </td>
-                            <td>
-                                <p>Specifies the width of the line in pixels.</p>
-                                <div>
-                                    <b>Type:</b> number
-                                </div>
-                                <div>
-                                    <b>Default:</b> 2
+                                    <b>Default:</b> <a
+                                        href="https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_red.png"
+                                        target="_blank">marker red</a>
                                 </div>
                             </td>
                         </tr>
@@ -414,7 +473,7 @@
                                     <b>Type:</b> number
                                 </div>
                                 <div>
-                                    <b>Default:</b> 2
+                                    <b>Default:</b> 3
                                 </div>
                             </td>
                         </tr>
