@@ -24,7 +24,7 @@
 				</button>
 
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0 col-9">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0 col-8">
 						<li class="nav-item">
 							<a class="nav-link active" aria-current="page" href="index.html">Map Viewer</a>
 						</li>
@@ -36,14 +36,20 @@
 						</li>
 					</ul>
 
-					<div>
-						<div class="input-group-text">
-							<input class="form-check-input mt-0 shadow-none" type="checkbox" value=""
-								aria-label="Checkbox for following text input" id="checkbox-hide-close-popup">
-							<label for="checkbox-hide-close-popup" class="form-control-sm">
-								Hide popup close button
-							</label>
-						</div>
+					<div class="input-group-text me-1">
+						<input class="form-check-input mt-0 shadow-none" type="checkbox" value=""
+							aria-label="Checkbox for following text input" id="checkbox-hide-map-zoom">
+						<label for="checkbox-hide-map-zoom" class="form-control-sm">
+							Hide <b>+</b> and <b>-</b>
+						</label>
+					</div>
+
+					<div class="input-group-text">
+						<input class="form-check-input mt-0 shadow-none" type="checkbox" value=""
+							aria-label="Checkbox for following text input" id="checkbox-hide-close-popup">
+						<label for="checkbox-hide-close-popup" class="form-control-sm">
+							Hide popup close button
+						</label>
 					</div>
 				</div>
 			</div>
@@ -60,8 +66,16 @@
 				</div>
 			</div>
 
+			<div class="mb-2 col-1">
+				<div class="input-group input-group-sm ">
+					<button class="btn btn-secondary shadow-none col-12" id="print-map-btn">
+						Print
+					</button>
+				</div>
+			</div>
+
 			<!--Import charts-->
-			<div class="mb-2 col-6">
+			<div class="mb-2 col-5">
 				<div class="input-group input-group-sm">
 					<span for="select_chart" class="input-group-text">Import Charts (JSON)</span>
 					<input class="form-control form-control-sm shadow-none" accept=".json" id="select_chart"
@@ -77,6 +91,17 @@
 			<div id="legend-title"></div>
 		</div> -->
 	</div>
+
+	<!-- <section class="container-fluid mt-1">
+
+		<div class="text-center">
+			<label class="form-label fs-4"><b>Generate Chart</b></label>
+		</div>
+
+		<div class="">
+
+		</div>
+	</section> -->
 </body>
 
 <script src="js/bootstrap.bundle.min.js"></script>

@@ -125,3 +125,11 @@ th {
 #property-content-table td {
   padding: 10px;
 }
+
+/*
+* Fix map horizontal empty space when printing
+* https: //stackoverflow.com/a/58878144
+**/
+.gm-style div>img {
+  position: absolute;
+}

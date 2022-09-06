@@ -170,8 +170,8 @@ const mapOptions = {
 	streetViewControlOptions: {
 		position: google.maps.ControlPosition.LEFT_TOP,
 	},
-	fullScreenControl: true,
-	fullScreenControlOptions: {},
+	fullscreenControl: true,
+	fullscreenControlOptions: {},
 	scrollwheel: true,
 	// options: {
 	// 	gestureHandling: "greedy",
@@ -1746,3 +1746,71 @@ checkboxHideClosePopupElement?.addEventListener("change", (event) => {
 		});
 	}
 });
+
+// Show/hide map zoom buttons
+const checkboxHideMapZoomElement = document.getElementById("checkbox-hide-map-zoom");
+checkboxHideMapZoomElement?.addEventListener("change", (event) => {
+	if (event.currentTarget.checked) {
+		map.setOptions({
+			zoomControl: false
+		})
+	} else {
+		map.setOptions({
+			zoomControl: true
+		})
+	}
+});
+
+// Print map btn
+const printMapBtnElement = document.getElementById("print-map-btn");
+printMapBtnElement?.addEventListener("click", async (event) => {
+	map.setOptions({
+		fullscreenControl: false,
+		zoomControl: false
+	})
+
+	// printAnyMaps ::
+	const $body = $('body');
+	const $mapContainer = $('#map');
+	const $mapContainerParent = $mapContainer.parent();
+	const $printContainer = $('<div style="position:relative;">');
+
+	$printContainer
+		.height($mapContainer.height())
+		.append($mapContainer)
+		.prependTo($body);
+
+	const $content = $body
+		.children()
+		.not($printContainer)
+		.not('script')
+		.detach();
+		
+	/**
+	 * Needed for those who use Bootstrap 3.x, because some of
+	 * its `@media print` styles ain't play nicely when printing.
+	 */
+	const $patchedStyle = $('<style media="print">')
+		.text(`
+          img { max-width: none !important; }
+          a[href]:after { content: ""; }
+        `)
+		.appendTo('head');
+
+	window.print();
+
+	$body.prepend($content);
+	$mapContainerParent.prepend($mapContainer);
+
+	$printContainer.remove();
+	$patchedStyle.remove();
+
+	map.setOptions({
+		fullscreenControl: true,
+		zoomControl: true
+	})
+});
+
+function delay(time) {
+	return new Promise(resolve => setTimeout(resolve, time));
+}
