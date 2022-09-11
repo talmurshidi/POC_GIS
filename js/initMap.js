@@ -720,14 +720,14 @@ function openInfoWindowDrawChart(countryName, latLng, map) {
 
 	let currentCountryChartProperties = currentCountryChart["properties"];
 	let unit = mapCharts["unit"] ?? "";
-	let chartMaxValue = mapCharts["chart_max_value"] ?? 1000;
+	let chartMaxValue = mapCharts["chart_max_value"] === "" ? 1000 : parseFloat(mapCharts["chart_max_value"]);
 	let chartCaption = mapCharts["chart_caption"] ?? "";
 
 	let dataArray = [[chartCaption, unit, { role: "style" }, { role: 'annotation' }]];
 
 	for (let index = 0; index < currentCountryChartProperties.length; index++) {
 		const element = currentCountryChartProperties[index];
-		const unitValue = element["value"];
+		const unitValue = element["value"] === "" ? 0 : parseFloat(element["value"]);
 		const propertyName = element["name"];
 		const legend = legends.find(obj => {
 			return obj["name"]?.toLowerCase() === propertyName?.toLowerCase();
@@ -1173,18 +1173,11 @@ function formatJson(dataGeoJSON) {
 }
 
 function exportGeoJson() {
-	let today = new Date();
-	let dd = String(today.getDate()).padStart(2, '0');
-	let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-	let yyyy = today.getFullYear();
-	let hours = today.getHours();
-	let mins = today.getMinutes();
-	let seconds = today.getSeconds();
 
 	let value = $("#output").val();
 	if (value) {
 		let jsonValue = JSON.parse(value);
-		let fileName = "map_" + yyyy + "_" + mm + "_" + dd + "_" + hours + "_" + mins + "_" + seconds + "_" + ".geojson";
+		let fileName = getFileName("map", "geojson");
 
 		let fileToSave = new Blob([JSON.stringify(jsonValue)], {
 			type: "application/json",
@@ -1707,110 +1700,20 @@ function putMap() {
 	importMap(selectMapElement);
 }
 
-/**
- * Import charts 
- */
-function importChart(src) {
-	let fr = new FileReader();
-
-	fr.onload = function () {
-		let jsonChart = JSON.parse(fr.result);
-		let legendTitle = jsonChart['legend_title'];
-		let legends = jsonChart['legends'];
-		drawLegend(map, legends, legendTitle)
-		mapCharts = jsonChart;
-	};
-	fr.onerror = function (e) {
-		console.error("reading failed");
-	};
-	fr.readAsText(src.files[0]);
-}
-
-const selectChartElement = document.getElementById("select_chart");
-selectChartElement?.addEventListener("click", onInputFileClick, false)
-function putChart() {
-	importChart(selectChartElement);
-}
-
-// Show/hide close popup cross button
-const checkboxHideClosePopupElement = document.getElementById("checkbox-hide-close-popup");
-checkboxHideClosePopupElement?.addEventListener("change", (event) => {
-	const closeCrosses = document.querySelectorAll('button.gm-ui-hover-effect');
-	if (event.currentTarget.checked) {
-		closeCrosses.forEach(closeCross => {
-			closeCross.style.setProperty("display", "none", "important");
-		});
-	} else {
-		closeCrosses.forEach(closeCross => {
-			closeCross.style.setProperty("display", "block", "important");
-		});
-	}
-});
-
-// Show/hide map zoom buttons
-const checkboxHideMapZoomElement = document.getElementById("checkbox-hide-map-zoom");
-checkboxHideMapZoomElement?.addEventListener("change", (event) => {
-	if (event.currentTarget.checked) {
-		map.setOptions({
-			zoomControl: false
-		})
-	} else {
-		map.setOptions({
-			zoomControl: true
-		})
-	}
-});
-
-// Print map btn
-const printMapBtnElement = document.getElementById("print-map-btn");
-printMapBtnElement?.addEventListener("click", async (event) => {
-	map.setOptions({
-		fullscreenControl: false,
-		zoomControl: false
-	})
-
-	// printAnyMaps ::
-	const $body = $('body');
-	const $mapContainer = $('#map');
-	const $mapContainerParent = $mapContainer.parent();
-	const $printContainer = $('<div style="position:relative;">');
-
-	$printContainer
-		.height($mapContainer.height())
-		.append($mapContainer)
-		.prependTo($body);
-
-	const $content = $body
-		.children()
-		.not($printContainer)
-		.not('script')
-		.detach();
-		
-	/**
-	 * Needed for those who use Bootstrap 3.x, because some of
-	 * its `@media print` styles ain't play nicely when printing.
-	 */
-	const $patchedStyle = $('<style media="print">')
-		.text(`
-          img { max-width: none !important; }
-          a[href]:after { content: ""; }
-        `)
-		.appendTo('head');
-
-	window.print();
-
-	$body.prepend($content);
-	$mapContainerParent.prepend($mapContainer);
-
-	$printContainer.remove();
-	$patchedStyle.remove();
-
-	map.setOptions({
-		fullscreenControl: true,
-		zoomControl: true
-	})
-});
-
 function delay(time) {
 	return new Promise(resolve => setTimeout(resolve, time));
+}
+
+function getFileName(prefixName, extension) {
+	let today = new Date();
+	let dd = String(today.getDate()).padStart(2, '0');
+	let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	let yyyy = today.getFullYear();
+	let hours = today.getHours();
+	let mins = today.getMinutes();
+	let seconds = today.getSeconds();
+
+	let fileName = prefixName + "_" + yyyy + "_" + mm + "_" + dd + "_" + hours + "_" + mins + "_" + seconds + +"." + extension;
+
+	return fileName;
 }
