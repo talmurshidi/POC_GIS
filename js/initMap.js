@@ -1705,7 +1705,7 @@ function delay(time) {
 }
 
 function getFileName(prefixName, extension) {
-	let today = new Date();
+	const today = new Date();
 	let dd = String(today.getDate()).padStart(2, '0');
 	let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 	let yyyy = today.getFullYear();
@@ -1713,7 +1713,7 @@ function getFileName(prefixName, extension) {
 	let mins = today.getMinutes();
 	let seconds = today.getSeconds();
 
-	let fileName = prefixName + "_" + yyyy + "_" + mm + "_" + dd + "_" + hours + "_" + mins + "_" + seconds + +"." + extension;
+	let fileName = prefixName + "_" + yyyy + "_" + mm + "_" + dd + "_" + hours + "_" + mins + "_" + seconds + "." + extension;
 
 	return fileName;
 }
